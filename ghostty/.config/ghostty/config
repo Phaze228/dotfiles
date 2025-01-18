@@ -1,0 +1,18 @@
+# Dev Stuff #
+gtk-single-instance = true
+## Themes ##
+theme = Horizon
+
+## Windows ##
+
+window-decoration = false
+background-opacity = 0.75
+
+## Fonts ##
+font-family = "Liga Liberation Mono"
+font-size = 10
+
+##  Keybinds ##
+keybind = opt+g>r=reload_config
+
+
