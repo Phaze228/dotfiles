@@ -48,6 +48,7 @@ vim.keymap.set('n', '<M-j>', '<C-w>-', { desc = 'Resize pane shorter' })
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>') -- NOTE: No Highlight on escape
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Diagnostic [Q]uickfix list' })
 
+vim.api.nvim_set_keymap('n', '<C-w><C-]>', ':vert winc ]<CR>', { noremap = true, silent = true })
 -- vim.keymap.set('n', 'ga', '<cmd>EasyAlign<CR>', { desc = 'Align by character' })
 -- vim.keymap.set('x', 'ga', '<cmd>EasyAlign<CR>')
 

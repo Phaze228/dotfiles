@@ -17,6 +17,17 @@ return {
       -- - sd'   - [S]urround [D]elete [']quotes
       -- - sr)'  - [S]urround [R]eplace [)] [']
 
+      require('mini.files').setup {
+
+        vim.keymap.set('n', '<leader>=', function()
+          if MiniFiles.get_explorer_state() ~= nil then
+            MiniFiles.close()
+          else
+            MiniFiles.open()
+          end
+        end),
+      }
+
       local statusline = require 'mini.statusline' -- NOTE: Simple, configurable statusline
       statusline.setup { use_icons = vim.g.have_nerd_font } -- Enables icons if nerdfonts
 

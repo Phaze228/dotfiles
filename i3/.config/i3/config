@@ -123,7 +123,7 @@ bindsym $mod+a focus parent
 
 ## Screenshot capabilities ##
 bindsym $mod+Shift+s exec "~/.scripts/scrgrp.sh root"
-bindsym $mod+s exec "~/.scripts/scrgrp.sh active"
+bindsym $mod+s exec "flameshot gui"
 # Screenshot capability
 bindsym --release $mod+Shift+s exec --no-startup-id scrot -s -f -o /tmp/snip.png && xclip -selection clipboard -t image/png -i /tmp/snip.png
 

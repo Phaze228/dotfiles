@@ -3,6 +3,7 @@ cpp
 golang
 javascript
 lua
+sql
 python
 rust
 zig

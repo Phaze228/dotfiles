@@ -136,6 +136,7 @@ PATHS_TO_ADD=(
     "~/.cargo/bin"
     "~/go/bin"
     "~/.local/flutter/"
+    "/home/phaze/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/"
     "/usr/local/go/bin"
     "/opt/mobile_app_dev/flutter/bin"
     "/opt/mobile_app_dev/android/cmdline-tools/bin"
