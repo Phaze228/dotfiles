@@ -12,6 +12,7 @@ esac
 HISTCONTROL=ignoreboth
 HISTSIZE=1000
 HISTFILESIZE=2000
+HISTTIMEFORMAT="[ %Y/%m/%d %T ] "
 
 ### SHOPT SETTINGS ####
 # append to the history file, don't overwrite it
@@ -138,6 +139,9 @@ PATHS_TO_ADD=(
     "~/.local/flutter/"
     "/home/phaze/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/"
     "/usr/local/go/bin"
+    "/usr/share/pywhisker"
+    "/usr/share/EyeWitness/Python/"
+    "/usr/share/zen"
     "/opt/mobile_app_dev/flutter/bin"
     "/opt/mobile_app_dev/android/cmdline-tools/bin"
     "/opt/mobile_app_dev/android/emulator/"
@@ -149,6 +153,13 @@ PATHS_TO_ADD=(
 export PATH=$PATH:$(echo ${PATHS_TO_ADD[*]} | tr ' ' ':')
 export MANPAGER='less -s -M +Gg'
 export LESS="--RAW-CONTROL-CHARS"
+
+## Google Cloud CLI
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/opt/google-cloud-sdk/path.bash.inc' ]; then . '/opt/google-cloud-sdk/path.bash.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/opt/google-cloud-sdk/completion.bash.inc' ]; then . '/opt/google-cloud-sdk/completion.bash.inc'; fi
 
 ## Source other config files ##
 if [ -f ~/.bash_aliases ]; then
@@ -226,7 +237,7 @@ function print_colors() {
 
 function btc() {
     local name="{$1-}"
-    [[ "$name" =~ "buds" ]] && blueoothctl connect AC:3E:B1:84:35:BB  ## ear_buds
+    [[ "$name" =~ "buds" ]] && bluetoothctl connect AC:3E:B1:84:35:BB  ## ear_buds
     [[ "$name" =~ "bose" ]] && bluetoothctl connect 2C:41:A1:2C:6A:B1 ## bose_soundlink
 
 }
@@ -240,3 +251,7 @@ function btc() {
 # function htbl() {
 #     openvpn ~/.hackthebox/lab-regular.ovpn
 # }
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"

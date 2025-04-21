@@ -38,7 +38,7 @@ alias tdcd="cd ~/Documents/knowledge_vault/tldr_notes/"
 
 # #HacktheBox
 alias htb="cd ~/Programming/HackTheBox/"
-alias htba="sudo openvpn ~/.hackthebox/academy.ovpn; ~/.bashrc"
+alias htba="sudo openvpn ~/.hackthebox/academy.ovpn; . ~/.bashrc"
 alias htbs="sudo openvpn ~/.hackthebox/seasonal.ovpn; . ~/.bashrc"
 alias htbl="sudo openvpn ~/.hackthebox/lab.ovpn; . ~/.bashrc"
 alias copyflags="cat user.flag | tcopy; sleep 3; cat root.flag| tcopy"
@@ -115,5 +115,8 @@ function timer () {
    done
 }
 
+function TUNIP () {
+    export TIP=$(ip -j -p a | jq '.[] | select(.ifname == "tun0") | .addr_info[] | select(.family == "inet") | .local' | tr -d '"')
+    printf $TIP
+}
 export EDITOR="nvim"
-export TUNIP=$(ip -j -p a | jq '.[] | select(.ifname == "tun0") | .addr_info[] | select(.family == "inet") | .local' | tr -d '"')

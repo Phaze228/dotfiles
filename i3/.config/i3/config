@@ -63,7 +63,7 @@ bindsym $mod+b exec $term -e lf
 #mail
 bindsym $mod+m exec $term -e mutt
 #firefox
-bindsym $mod+w exec firefox
+bindsym $mod+w exec zen
 
 # kill focused window
 bindsym $mod+Shift+q kill
@@ -207,6 +207,8 @@ workspace $ws_music output $monitor2
 # Application assignments
 # Find class via xprop -> click application
 assign [class="firefox-esr-esr115"] $ws_web
+assign [class="zen"] $ws_web
+assign [class="Navigator"] $ws_web
 assign [class="obsidian"] $ws_notes
 assign [class="TradingView"] $ws_trading
 assign [class="Gimp"] $ws_gimp
