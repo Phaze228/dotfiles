@@ -11,7 +11,7 @@ set $selected_wallpaper ~/Pictures/wallpapers/space_jelly.jpg
 floating_modifier $mod
 
 # Window Font. Bar Font unless overwritten in bar block {}
-font pango:Liberation Mono 9 
+font pango:Liberation Mono 9, FontAwesome 9
 
 
 ## XDG / NM Applet XSS Locks ##
@@ -32,7 +32,7 @@ exec --no-startup-id nm-applet
 exec_always --no-startup-id xrandr --output $monitor1 --auto --output $monitor2 --auto --right-of $monitor1
 exec_always --no-startup-id ~/.config/i3/.fehbg
 #Transparency
-exec --no-startup-id compton 
+exec --no-startup-id picom
 
 ## Peripherals ##
 #Mouse acceleration off
@@ -56,14 +56,14 @@ bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOU
 # start a terminal
 # bindsym $mod+Return exec i3-sensible-terminal
 bindsym $mod+Return exec $term
-#processes
+# processes
 bindsym $mod+p exec $term -e htop
-#file viewer
+# file viewer
 bindsym $mod+b exec $term -e lf 
-#mail
+# mail
 bindsym $mod+m exec $term -e mutt
-#firefox
-bindsym $mod+w exec zen
+# web-browser
+bindsym $mod+w exec zen-browser
 
 # kill focused window
 bindsym $mod+Shift+q kill
@@ -149,11 +149,11 @@ bindsym $mod+c [instance="calculator"] scratchpad show; move position center
 
 ## Workspace Names ##
 set $ws_terminals "1: Terminals"
-set $ws_web "2: Browsing"
-set $ws_office "3: Office / School"
-set $ws_notes "4: Obsidian"
-set $ws_trading "5: Tradingview"
-set $ws_gimp "6: Gimp"
+set $ws_web "2: Web"
+set $ws_office "3: Networks|Office"
+set $ws_notes "4: Notes|Virtuals"
+set $ws_trading "5: Other"
+set $ws_gimp "6: Art"
 set $ws_music "7: Spotify"
 set $ws_other "8: Other"
 set $ws9 "9: Zoom - Primary Monitor"
@@ -214,6 +214,7 @@ assign [class="TradingView"] $ws_trading
 assign [class="Gimp"] $ws_gimp
 assign [class="libreoffice"] $ws_office
 assign [class="ZAP"] $ws_office
+assign [class="burp-StartBurp"] $ws_office
 assign [class="install4j-burp-StartBurp"] $ws_office
 assign [class="Spotify"] $ws_music
 assign [class="discord"] $ws_trading
@@ -247,7 +248,8 @@ set $active_ws #7efaff
 set $inactive_ws #e6e6fa
 # Start i3bar to display a workspace bar 
 bar {
-        status_command i3status 
+        font pango:Hack Nerd Font Mono 8, FontAwesome 8
+        status_command i3status-rs
         colors {
                 background $bg_color
                 separator $sep_color

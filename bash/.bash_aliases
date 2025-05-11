@@ -1,5 +1,4 @@
 
-
 # some more ls aliases
 alias ls='exa'
 alias li="exa --icons"
@@ -11,10 +10,10 @@ alias l='exa -CF'
 alias py="python3"
 alias vim="nvim"
 alias ipy="ipython3"
-alias pgf="cd ~/Programming"
 alias tcopy="xclip -sel clip -i"
 alias tpaste="xclip -sel clip -o"
 alias bat="batcat"
+alias nc="ncat"
 
 # Time #
 alias utc="date -u '+%Y-%m-%d %H:%M:%S'"
@@ -33,20 +32,20 @@ alias weather="curl wttr.in"
 
 
 # Notes #
-alias hnotes="cd ~/Documents/knowledge_vault/Hacking/"
-alias tdcd="cd ~/Documents/knowledge_vault/tldr_notes/"
+alias hnotes="cd ~/notes/knowledge_vault/Hacking/"
+alias tdcd="cd ~/notes/tldr_notes/"
 
 # #HacktheBox
-alias htb="cd ~/Programming/HackTheBox/"
-alias htba="sudo openvpn ~/.hackthebox/academy.ovpn; . ~/.bashrc"
+alias htb="cd ~/hacking/HTB/"
+alias htba="sudo openvpn ~/.hackthebox/academy.ovpn& >& /dev/null && echo '[Academy Connection Successful]"
 alias htbs="sudo openvpn ~/.hackthebox/seasonal.ovpn; . ~/.bashrc"
 alias htbl="sudo openvpn ~/.hackthebox/lab.ovpn; . ~/.bashrc"
 alias copyflags="cat user.flag | tcopy; sleep 3; cat root.flag| tcopy"
 
 # Hack Tools #
-alias john="/opt/john/run/john"
-alias zip2john="/opt/john/run/zip2john"
-alias source_john=". ~/.john_aliases.sh"
+# alias john="/opt/john/run/john"
+# alias zip2john="/opt/john/run/zip2john"
+# alias source_john=". ~/.john_aliases.sh"
 
 
 
@@ -65,17 +64,25 @@ function define() {
 
 
 function cdp () {
-   [[ -z $1 ]] && cd ~/Programming/ && return
+   [[ -z $1 ]] && cd ~/programming/ && return
    echo ${1}
-   cd ~/Programming/${1^}
+   cd ~/programming/${1^}
 }
 
 function dcbh() {
    sudo docker compose -f /home/phaze/Programming/HackTheBox/bloodhound/docker-compose.yml "$@"
 }
 
+function add_to_hosts() {
+   [[ -z $1 ]] && echo 'Usage: <ip> <domain> to add a box to HTB boxes' && return
+   local ip=$1
+   local domain=$2
+   sudo sed -i "/HTB Boxes/a${ip}  ${domain}" /etc/hosts
+
+}
+
 function qnotes() {
-   local input_file=$(find ~/Documents/knowledge_vault/Hacking/ -type f | fzf --preview "batcat --style numbers,changes --color=always {} | head -n 500")
+   local input_file=$(find ~/knowledge_vault/Hacking/ -type f | fzf --preview "bat --style numbers,changes --color=always {} | head -n 500")
    # local input_file=$(find ~/Documents/knowledge_vault/Hacking/ -type f | fzf --preview "glow -p {}")
    echo $input_file
    [[ -z $input_file ]] && return 1
@@ -84,8 +91,8 @@ function qnotes() {
 
 
 function tldredit() {
-   local note_path=~/Documents/knowledge_vault/tldr_notes/
-   local input_file=$(find "${note_path}" -type f | fzf --preview "batcat --color=always {}")
+   local note_path=~/notes/tldr-notes/
+   local input_file=$(find "${note_path}" -type f | fzf --preview "bat --color=always {}")
    [[ -z $input_file ]] && return 1
    [[ -f $input_file ]] && vim $input_file
 }
@@ -95,7 +102,7 @@ function tldrnew() {
    local patch="${2}"
    [[ ! -z $patch ]] && patch='patch.md'
    [[ -z $patch ]] && patch='page.md'
-   local note_path=~/Documents/knowledge_vault/tldr_notes/
+   local note_path=~/notes/tldr-notes/
    local exists=$(ls ${note_path}${note}.${patch})
    if [[ ! -z $exists ]]; then
       echo "[[ Note: $note.$patch.md Exists! Try tldredit ]]"

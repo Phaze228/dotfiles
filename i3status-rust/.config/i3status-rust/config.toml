@@ -1,0 +1,69 @@
+icons_format = "{icon} "
+
+[theme]
+theme = "solarized-dark"
+[theme.overrides]
+idle_bg = "#123456"
+idle_fg = "#abcdef"
+
+[icons]
+icons = "awesome4"
+# [icons.overrides]
+# bat = ["|E|", "|_|", "|=|", "🔋"]
+# bat_charging = "|^| "
+
+[[block]]
+block = "net"
+format = " $icon {$signal_strength $ssid $frequency|Wired connection} $device "
+format_alt = " $icon {$signal_strength $ssid $frequency|Wired connection} $ip "
+[block.theme_overrides]
+idle_bg = "#027d6c"
+good_bg = "#013220"
+bad_bg = "#cc4949"
+
+[[block]]
+block = "cpu"
+info_cpu = 20
+warning_cpu = 50
+critical_cpu = 90
+
+[[block]]
+block = "disk_space"
+path = "/"
+info_type = "available"
+alert_unit = "GB"
+interval = 20
+warning = 20.0
+alert = 10.0
+format = " $icon : $available.eng(w:2) "
+
+[[block]]
+block = "memory"
+format = " $icon $mem_used.eng(w:2,u:B) "
+format_alt = " $icon_swap $swap_used.eng(w:2) "
+warning_mem = 75.0
+critical_mem = 90.0
+
+[[block]]
+block = "sound"
+[[block.click]]
+button = "left"
+cmd = "pavucontrol"
+
+[[block]]
+block = "battery"
+format = "$icon  $percentage {$time_remaining.dur(hms:true, min_unit:m) |}"
+full_format = "$icon"
+
+[[block]]
+block = "time"
+interval = 5
+timezone = "Pacific/Honolulu"
+# format = "$timestamp.datetime(f:'%a %b %d %R') "
+[block.format]
+full = "$timestamp.datetime(f:'%a %m-%d-%Y %R %Z', l:en_US) "
+short = "$timestamp.datetime(f:'%a %b %d %R') "
+[block.theme_overrides]
+idle_fg = "#ff992f"
+
+

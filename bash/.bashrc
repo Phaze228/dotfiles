@@ -136,16 +136,18 @@ PATHS_TO_ADD=(
     "~/.local/bin"
     "~/.cargo/bin"
     "~/go/bin"
-    "~/.local/flutter/"
-    "/home/phaze/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/"
+    "~/.local/share/gem/ruby/3.3.0/bin"
+    # "~/.local/share/uv/python/cpython-3.13.3-linux-x86_64-gnu/bin/"
+    # "~/.local/flutter/"
+    # "/home/phaze/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/"
     "/usr/local/go/bin"
-    "/usr/share/pywhisker"
-    "/usr/share/EyeWitness/Python/"
-    "/usr/share/zen"
-    "/opt/mobile_app_dev/flutter/bin"
-    "/opt/mobile_app_dev/android/cmdline-tools/bin"
-    "/opt/mobile_app_dev/android/emulator/"
-    "/opt/mobile_app_dev/android/platform-tools"
+    # "/usr/share/pywhisker"
+    # "/usr/share/EyeWitness/Python/"
+    # "/usr/share/zen"
+    # "/opt/mobile_app_dev/flutter/bin"
+    # "/opt/mobile_app_dev/android/cmdline-tools/bin"
+    # "/opt/mobile_app_dev/android/emulator/"
+    # "/opt/mobile_app_dev/android/platform-tools"
 )
 
 
@@ -208,7 +210,7 @@ function setbg() {
     [ -z $1 ] && echo "setbg <jpg file>" && return 1
     local bg=$(realpath "${1}")
     local lockimg=${bg/jpg/png}
-    convert ${bg} ${lockimg}
+    magick ${bg} ${lockimg}
     ln -sf ${bg} ~/.config/i3/background.jpg
     ln -sf ${lockimg} ~/.config/i3/lock.png
     refreshbg

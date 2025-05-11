@@ -4,7 +4,7 @@
 local lazyPath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
 if not (vim.uv or vim.loop).fs_stat(lazyPath) then
   local lazyRepo = 'https://github.com/folke/lazy.nvim.git'
-  local cloned = vim.fn.system { 'git', 'clone', '--filiter=blob:none', '--branch=stable', lazyRepo, lazyPath }
+  local cloned = vim.fn.system { 'git', 'clone', '--filter=blob:none', '--branch=stable', lazyRepo, lazyPath }
   if vim.v.shell_error ~= 0 then
     vim.api.nvim_echo({
       { '[ERROR] - Could not clone Lazy.nvim:\n', 'ErrorMsg' },
@@ -22,6 +22,7 @@ vim.opt.runtimepath:prepend(lazyPath) -- NOTE: adds Lazy to the nvim path; Prepe
 require('lazy').setup {
   spec = {
     { 'tpope/vim-sleuth' },
+    { 'tpope/vim-fugitive' },
     { import = 'cfg.colorschemes' },
     { import = 'cfg.lsp' },
     { import = 'cfg.nav' },
