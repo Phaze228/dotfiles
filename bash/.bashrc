@@ -17,46 +17,35 @@ HISTTIMEFORMAT="[ %Y/%m/%d %T ] "
 ### SHOPT SETTINGS ####
 # append to the history file, don't overwrite it
 shopt -s histappend
-
-# check the window size after each command and, if necessary,
-# update the values of LINES and COLUMNS.
+# check the window size after each command and, if necessary, update the values of LINES and COLUMNS.
 shopt -s checkwinsize
+
+# enable programmable completion features (you don't need to enable
+# this, if it's already enabled in /etc/bash.bashrc and /etc/profile
+# sources /etc/bash.bashrc).
+if ! shopt -oq posix; then
+  if [ -f /usr/share/bash-completion/bash_completion ]; then
+    . /usr/share/bash-completion/bash_completion
+  elif [ -f /etc/bash_completion ]; then
+    . /etc/bash_completion
+  fi
+fi
 
 # If set, the pattern "**" used in a pathname expansion context will
 # match all files and zero or more directories and subdirectories.
 #shopt -s globstar
 
 
-## TERMINAL COLOR AND PS1 PROMPT ##
-# set variable identifying the chroot you work in (used in the prompt below)
-if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
-    debian_chroot=$(cat /etc/debian_chroot)
-fi
-
-# set a fancy prompt (non-color, unless we know we "want" color)
-case "$TERM" in
-    xterm-color|*-256color) color_prompt=yes;;
-esac
 
 
-if [ -n "$force_color_prompt" ]; then
-    if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
-	# We have color support; assume it's compliant with Ecma-48
-	# (ISO/IEC-6429). (Lack of such support is extremely rare, and such
-	# a case would tend to support setf rather than setaf.)
-	color_prompt=yes
-    else
-	color_prompt=
-    fi
-fi
-
-
-# JQ COLORS #
+### JQ COLORS ###
 #    1 ; 2    ; 3  ; 4    ;   5   ;  6   ;   7   ;  8   
 #  null;false;true;numbers;strings;arrays;objects;object-keys
 export JQ_COLORS="0;90:0;39:0;39:0;39:0;34:1;39:1;39:1;34"
 
-# -- Source GIT prompt -- #
+
+### Terminal Prompts ###
+## -- Source GIT prompt -- ##
 source ~/.scripts/git-prompt.sh
 # --  COLORS -- #
 # R='\e[0m'
@@ -85,14 +74,11 @@ HC=$DARK_BLUE     #Host \h Color
 DC=$GREEN         #Dir \w Color
 GC=$RED           #GIT    Color
 GITP=$(__git_ps1 " (%s)")
-if [ "$color_prompt" = yes ]; then
-    export PS1="\[$BOLD$UC\]\u\[$R\]@\[$BOLD$HC\]\h\[$R\]|\[$DC\]\w\[$R\]:\[$GC\]$(__git_ps1 '%s')\[$R\]$ "
-    export PS2=">> "
-else
-    PS1='${debian_chroot:+($debian_chroot)}\u@\h:[\w]$ '
-fi
+
+export PS1="\[$BOLD$UC\]\u\[$R\]@\[$BOLD$HC\]\h\[$R\]|\[$DC\]\w\[$R\]:\[$GC\]$(__git_ps1 '%s')\[$R\]$ "
+export PS2=">> "
+
 # INITIAL_PROMPT="\[$BOLD$UC\]\u\[$R\]@\[$BOLD$HC\]\h\[$R\]|\[$DC\]\w\[$R\]:\[$GC\]$(__git_ps1 '%s')\[$R\]$ "
-unset color_prompt force_color_prompt
 PROMPT_COMMAND='
     cur_dir="$PWD"
     if [[ "$cur_dir" != "$prev_dir" ]]; then
@@ -107,8 +93,6 @@ PROMPT_COMMAND='
 if [ -x /usr/bin/dircolors ]; then
     test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
     alias ls='ls --color=auto'
-    #alias dir='dir --color=auto'
-    #alias vdir='vdir --color=auto'
 
     alias grep='grep --color=auto'
     alias fgrep='fgrep --color=auto'
@@ -119,24 +103,29 @@ fi
 #export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 #
 #
+## Less Configuration ##
+
 # make less more friendly for non-text input files, see lesspipe(1) 
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
-# Enable colors in LESS
+# Pretty colors for the `less` utility
 lesscolors=$HOME/.config/.LESS_TERMCAP
+
 [[ -f $lesscolors ]] && . $lesscolors
+unset lesscolors
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
-export ANDROID_HOME=/opt/mobile_app_dev/android
 
+### Path Configuration ###
 PATHS_TO_ADD=(
     "~/.local/bin"
     "~/.cargo/bin"
     "~/go/bin"
     "~/.local/share/gem/ruby/3.3.0/bin"
+    "~/.local/share/gem/ruby/3.4.0/bin"
     # "~/.local/share/uv/python/cpython-3.13.3-linux-x86_64-gnu/bin/"
     # "~/.local/flutter/"
     # "/home/phaze/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/"
@@ -144,6 +133,7 @@ PATHS_TO_ADD=(
     # "/usr/share/pywhisker"
     # "/usr/share/EyeWitness/Python/"
     # "/usr/share/zen"
+    "/opt/john/run/"
     # "/opt/mobile_app_dev/flutter/bin"
     # "/opt/mobile_app_dev/android/cmdline-tools/bin"
     # "/opt/mobile_app_dev/android/emulator/"
@@ -153,46 +143,21 @@ PATHS_TO_ADD=(
 
 
 export PATH=$PATH:$(echo ${PATHS_TO_ADD[*]} | tr ' ' ':')
+# export ANDROID_HOME=/opt/mobile_app_dev/android
+# bun
+# export BUN_INSTALL="$HOME/.bun"
+# export PATH="$BUN_INSTALL/bin:$PATH"
+
+## Google Cloud CLI ##
+# The next line updates PATH for the Google Cloud CLI and completion for CLI arguments
+[ -f '/opt/google-cloud-cli/path.bash.inc' ] && . /opt/google-cloud-cli/path.bash.inc
+[ -f '/opt/google-cloud-cli/completion.bash.inc' ] && . /opt/google-cloud-cli/completion.bash.inc
+
+
 export MANPAGER='less -s -M +Gg'
 export LESS="--RAW-CONTROL-CHARS"
 
-## Google Cloud CLI
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '/opt/google-cloud-sdk/path.bash.inc' ]; then . '/opt/google-cloud-sdk/path.bash.inc'; fi
 
-# The next line enables shell command completion for gcloud.
-if [ -f '/opt/google-cloud-sdk/completion.bash.inc' ]; then . '/opt/google-cloud-sdk/completion.bash.inc'; fi
-
-## Source other config files ##
-if [ -f ~/.bash_aliases ]; then
-    . ~/.bash_aliases
-fi
-
-if [ -f ~/.bash_github ]; then
-    . ~/.bash_github
-fi
-
-
-# enable programmable completion features (you don't need to enable
-# this, if it's already enabled in /etc/bash.bashrc and /etc/profile
-# sources /etc/bash.bashrc).
-if ! shopt -oq posix; then
-  if [ -f /usr/share/bash-completion/bash_completion ]; then
-    . /usr/share/bash-completion/bash_completion
-  elif [ -f /etc/bash_completion ]; then
-    . /etc/bash_completion
-  fi
-fi
-
-
-# If this is an xterm set the title to user@host:dir
-case "$TERM" in
-xterm*|rxvt*)
-    PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
-    ;;
-*)
-    ;;
-esac
 
 
 
@@ -254,6 +219,11 @@ function btc() {
 #     openvpn ~/.hackthebox/lab-regular.ovpn
 # }
 
-# bun
-export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:$PATH"
+## FZF Bindings ##
+[ -f /usr/share/fzf/completion.bash ] && . /usr/share/fzf/completion.bash
+[ -f /usr/share/fzf/key-bindings.bash ] && .  /usr/share/fzf/key-bindings.bash
+
+## Source local configs ##
+
+[ -f ~/.bash_aliases ] && . ~/.bash_aliases
+[ -f ~/.bash_github ] && . ~/.bash_github

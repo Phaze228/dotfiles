@@ -1,10 +1,11 @@
 icons_format = "{icon} "
 
 [theme]
-theme = "solarized-dark"
-[theme.overrides]
-idle_bg = "#123456"
-idle_fg = "#abcdef"
+theme = "ctp-mocha"
+# [theme.overrides]
+# separator_bg = "#44444455"
+# idle_bg = "#123456"
+# idle_fg = "#abcdef"
 
 [icons]
 icons = "awesome4"
@@ -23,6 +24,8 @@ bad_bg = "#cc4949"
 
 [[block]]
 block = "cpu"
+format = "$icon $utilization $frequency "
+format_alt = "$icon $utilization "
 info_cpu = 20
 warning_cpu = 50
 critical_cpu = 90
@@ -49,6 +52,11 @@ block = "sound"
 [[block.click]]
 button = "left"
 cmd = "pavucontrol"
+
+[[block]]
+block = "bluetooth"
+mac = "2C:41:A1:2C:6A:B1"
+format = " $icon $name.str(max_w:5) {$percentage|}"
 
 [[block]]
 block = "battery"

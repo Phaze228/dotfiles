@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+TEMPLATE_DIR="$HOME/notes/.templates"
+VALID_STYLES=("htb" "report" "other")
+
+post_style=${1,,}
+post_title=${2}
+initial_creds=${3}
+
+usage() {
+   echo "new_post <post_style: [${VALID_STYLES[@]}] > <post_title> <initial_creds>"
+   exit 1
+}
+
+[[ -z $post_style ]] || [[ -z $post_title ]] && usage
+
+if ! grep -Eoq "${post_style}" <<< "${VALID_STYLES[@]}"; then
+   echo '[-] Invalid style!'
+   echo "Valid Styles: ${VALID_STYLES[@]}"
+   exit 1
+fi
+
+template="$TEMPLATE_DIR/$post_style/template.md"
+
+new_post_title="$(date '+%Y-%m-%d')_${post_title// /-}"
+# new_post_title="${new_post_title,,}"
+out_file="$HOME/notes/chin-tech.github.io/_posts/${new_post_title,,}.md"
+
+sed -e "s/_title_/${post_title}/" -e "s/_date_/$(date)/" -e "s/_creds_/${initial_creds}/" $template > "${out_file}"
+
+nvim "${out_file}"

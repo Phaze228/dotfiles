@@ -14,6 +14,7 @@ alias tcopy="xclip -sel clip -i"
 alias tpaste="xclip -sel clip -o"
 alias bat="batcat"
 alias nc="ncat"
+alias john="/opt/john/run/john"
 
 # Time #
 alias utc="date -u '+%Y-%m-%d %H:%M:%S'"
@@ -23,9 +24,10 @@ alias dtpdate="date +%Y-%m-%d\ %H:%M:%S.%N"
 alias vimcfg="nvim ~/.config/nvim/init.lua"
 alias i3cfg="nvim ~/.config/i3/config"
 alias bashcfg="nvim ~/.bashrc && source ~/.bashrc"
-alias tmuxcfg="nvim ~/.tmux.conf"
+alias tmuxcfg="nvim ~/.config/tmux/tmux.conf"
 alias aliascfg="nvim ~/.bash_aliases && source ~/.bash_aliases"
 alias ghostcfg="nvim ~/.config/ghostty/config"
+alias i3statuscfg="nvim ~/.config/i3status-rust/config.toml"
 
 #Weather
 alias weather="curl wttr.in"
@@ -41,6 +43,7 @@ alias htba="sudo openvpn ~/.hackthebox/academy.ovpn& >& /dev/null && echo '[Acad
 alias htbs="sudo openvpn ~/.hackthebox/seasonal.ovpn; . ~/.bashrc"
 alias htbl="sudo openvpn ~/.hackthebox/lab.ovpn; . ~/.bashrc"
 alias copyflags="cat user.flag | tcopy; sleep 3; cat root.flag| tcopy"
+alias pandoctmpls="cd /usr/share/haskell-pandoc/data/templates/"
 
 # Hack Tools #
 # alias john="/opt/john/run/john"
@@ -69,16 +72,22 @@ function cdp () {
    cd ~/programming/${1^}
 }
 
-function dcbh() {
-   sudo docker compose -f /home/phaze/Programming/HackTheBox/bloodhound/docker-compose.yml "$@"
+function bhup() {
+   bh_yml=/opt/bloodhound/docker-compose.yml
+   [[ ! -f $bh_yml ]] && echo "[-] YAML file not in destination: $bh_file" && return 1
+   docker compose ls | grep -q blood && echo '[+] Bloodhound already running!'&&  return 0
+   docker compose -f $bh_yml up -d
 }
 
 function add_to_hosts() {
    [[ -z $1 ]] && echo 'Usage: <ip> <domain> to add a box to HTB boxes' && return
    local ip=$1
    local domain=$2
-   sudo sed -i "/HTB Boxes/a${ip}  ${domain}" /etc/hosts
-
+   if grep -q $ip /etc/hosts; then
+      sudo sed -i "/$ip/s/[[:space:]]$domain\$//; /$ip/s/\$/ ${domain}/" /etc/hosts
+   else
+      sudo sed -i "/HTB Boxes/a${ip}  ${domain}" /etc/hosts
+   fi
 }
 
 function qnotes() {

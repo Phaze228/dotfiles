@@ -261,6 +261,13 @@ EXEC 01;91
 .rs 38;2;200;100;100
 .zig 38;2;200;100;100
 .zon 38;2;200;100;100
+
+# Documentation files
+.yaml 39;4;3
+.yml 39;4;3
+.cfg 39;4;3
+.config 39;4;3
+# Dockerfile 94;4
 # .zon 03;04;35
 #
 # Subsequent TERM or COLORTERM entries, can be used to add / override
