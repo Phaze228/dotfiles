@@ -24,7 +24,14 @@ template="$TEMPLATE_DIR/$post_style/template.md"
 
 new_post_title="$(date '+%Y-%m-%d')_${post_title// /-}"
 # new_post_title="${new_post_title,,}"
-out_file="$HOME/notes/chin-tech.github.io/_posts/${new_post_title,,}.md"
+if [[ "$post_style" == "htb" ]]; then
+   out_path="${HOME}/notes/chin-tech.github.io/_posts/"
+else
+   out_path="./"
+fi
+
+
+out_file="${out_path}${new_post_title,,}.md"
 
 sed -e "s/_title_/${post_title}/" -e "s/_date_/$(date)/" -e "s/_creds_/${initial_creds}/" $template > "${out_file}"
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 # Github interactions
-GITHUB_TOKEN="$(grep -oP 'token = \K(.*)'  ~/.gitconfig)"
-GITHUB_TOKEN2="$(grep -oP 'token = \K(.*)'  ~/.gitconfig)"
+GITHUB_TOKEN="$(grep -oP 'token = \K(.*)'  ~/.config/git/config)"
+GITHUB_TOKEN2="$(grep -oP 'token = \K(.*)'  ~/.config/git/config)"
 GITHUB_API_URL="https://api.github.com"
 GITHUB_PROFILE="Phaze228"
 

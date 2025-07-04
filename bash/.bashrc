@@ -79,6 +79,7 @@ export PS1="\[$BOLD$UC\]\u\[$R\]@\[$BOLD$HC\]\h\[$R\]|\[$DC\]\w\[$R\]:\[$GC\]$(_
 export PS2=">> "
 
 # INITIAL_PROMPT="\[$BOLD$UC\]\u\[$R\]@\[$BOLD$HC\]\h\[$R\]|\[$DC\]\w\[$R\]:\[$GC\]$(__git_ps1 '%s')\[$R\]$ "
+
 PROMPT_COMMAND='
     cur_dir="$PWD"
     if [[ "$cur_dir" != "$prev_dir" ]]; then
@@ -153,6 +154,9 @@ export PATH=$PATH:$(echo ${PATHS_TO_ADD[*]} | tr ' ' ':')
 [ -f '/opt/google-cloud-cli/path.bash.inc' ] && . /opt/google-cloud-cli/path.bash.inc
 [ -f '/opt/google-cloud-cli/completion.bash.inc' ] && . /opt/google-cloud-cli/completion.bash.inc
 
+## AWS CLI ##
+[ -f '/usr/bin/aws_completer' ] && complete -C '/usr/bin/aws_completer' aws
+
 
 export MANPAGER='less -s -M +Gg'
 export LESS="--RAW-CONTROL-CHARS"
@@ -204,7 +208,8 @@ function print_colors() {
 
 function btc() {
     local name="{$1-}"
-    [[ "$name" =~ "buds" ]] && bluetoothctl connect AC:3E:B1:84:35:BB  ## ear_buds
+    # [[ "$name" =~ "buds" ]] && bluetoothctl connect AC:3E:B1:84:35:BB  ## ear_buds
+    [[ "$name" =~ "buds" ]] && bluetoothctl connect 14:22:3B:D9:B8:DF ## old/new buds
     [[ "$name" =~ "bose" ]] && bluetoothctl connect 2C:41:A1:2C:6A:B1 ## bose_soundlink
 
 }

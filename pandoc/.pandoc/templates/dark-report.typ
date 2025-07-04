@@ -1339,10 +1339,39 @@ let t_title = if t_title == none { "Assessor"} else {t_title }
     ), ..for (name, affiliation, email) in contacts {
     (name, affiliation, email)})
   
-  )
+    )
+  }
 }
 
+#let create_scopes_table(in_data: none, header: none) = {
+  if in_data == none {
+  [""]
+} else {
+  set align(center)
+  align(center, table(
+    columns: 1,
+    align: center + horizon,
+    table.header(
+      [#text(orange)[#header]]
+    ), .. in_data
+  ))
 }
+}
+
+#let make_scope_table(external: none, internal: none, rules: none) = {
+  if external != none {
+  create_scopes_table(in_data: external, header:"External")
+  }
+  if internal != none {
+  create_scopes_table(in_data: internal, header: "Internal")
+  }
+  if rules != none {
+  create_scopes_table(in_data: rules, header: "Rules of Engagement")
+  // list(for (rule) in rules { [#rule]})
+  }
+}
+
+// #let substitute_approach(approach_type: none, )
 
 #let colorize_cvss(in_text) = {
   if in_text != none {
@@ -1449,10 +1478,14 @@ let t_title = if t_title == none { "Assessor"} else {t_title }
   figuresupplement: auto,
   ip_addresses: (),
   company_name: none,
+  company_shortname: none,
   customer_name: none,
   company_contacts: (),
   version: none,
   domains: (),
+  scope_rules: none,
+  scope_internal: none,
+  scope_external: none,
   doc,
 ) = {
 
@@ -1605,10 +1638,13 @@ let t_title = if t_title == none { "Assessor"} else {t_title }
   show "%company%" : name => [#company_name]
   show "%ip_addresses%" : name => [#list(..ip_addresses)]
   show "%customer_name%" : name => [#company_name]
-  // show "%author.name%" : name => [#authors.at(0).name]
+  show "%company_name%" : name => [#company_name]
+  show "%company_shortname%" : name => [#company_shortname]
+  show "%author%" : name => [#authors.at(0).affiliation]
   // show "%author.email%" : name => [#authors.at(0).email]
   show "%company_contacts%" : _ => [#make_contact_table(t_title: company_name, contacts: company_contacts, )]
   show "%assesor_contacts%" : _ => [#make_contact_table(contacts: authors, )]
+  show "%penetration_test_scope%" : _ => [#make_scope_table(external: scope_external, internal: scope_internal, rules: scope_rules)]
   show regex("^CVSS \d\.\d+.*"): it =>  {
   colorize_cvss(it)
   }
@@ -1750,6 +1786,39 @@ $endif$
 $if(company_name)$ 
 company_name: "$company_name$",
 $endif$
+
+$if(company_shortname)$ 
+company_shortname: "$company_shortname$",
+$endif$
+
+//scope external
+$if(scope_external_domains)$
+  scope_external: (
+$for(scope_external_domains)$
+    "$scope_external_domains$",
+$endfor$
+    ),
+$endif$
+
+//scope internal
+$if(scope_internal_domains)$
+  scope_internal: (
+$for(scope_internal_domains)$
+    "$scope_internal_domains$",
+$endfor$
+    ),
+$endif$
+
+// scope rules
+$if(scope_rules)$
+  scope_rules: (
+$for(scope_rules)$
+    "$scope_rules$",
+$endfor$
+    ),
+$endif$
+
+// END CUSTOM REPORTING INCLUSIONS
   sectionnumbering: $if(section-numbering)$"$section-numbering$"$else$"1.1.1.1.1.1.1.1.1. "$endif$,
   pagenumbering: $if(page-numbering)$"$page-numbering$"$else$none$endif$,
   figurenumberingwithheadingnumbers: $if(figure.numbering.heading_numbers)$true$else$if "$figure.numbering.heading_numbers$" in ("none", "disable") { false }$endif$,

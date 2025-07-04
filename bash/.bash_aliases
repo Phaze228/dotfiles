@@ -1,3 +1,8 @@
+## Exports ##
+export EDITOR="nvim"
+export MY_NOTES_PATH="$HOME/notes/"
+export MY_PENTEST_NOTES="$HOME/notes/knowledge_vault/Pentesting/"
+
 
 # some more ls aliases
 alias ls='exa'
@@ -8,13 +13,15 @@ alias l='exa -CF'
 
 
 alias py="python3"
+alias v="nvim"
 alias vim="nvim"
 alias ipy="ipython3"
-alias tcopy="xclip -sel clip -i"
-alias tpaste="xclip -sel clip -o"
+alias tcopy="xclip -sel clip -i -d ':0'"
+alias tpaste="xclip -sel clip -o -d ':0'"
 alias bat="batcat"
 alias nc="ncat"
 alias john="/opt/john/run/john"
+alias tf="terraform"
 
 # Time #
 alias utc="date -u '+%Y-%m-%d %H:%M:%S'"
@@ -65,6 +72,17 @@ function define() {
    curl -s https://api.dictionaryapi.dev/api/v2/entries/en/${word} | jq '.[] | [.word, .meanings[].definitions[].definition]'
 }
 
+fastmap() {
+   host="${1}"
+   path="${2}"
+   if [[ -z "$path" ]]; then
+      nmap -vv -sCV -Pn -T4 --min-rate 1000 -p- "$host"
+   else
+      nmap -vv -sCV -oA "$path" -Pn -T4 --min-rate 1000 -p- "$host"
+   fi
+
+}
+
 
 function cdp () {
    [[ -z $1 ]] && cd ~/programming/ && return
@@ -90,18 +108,18 @@ function add_to_hosts() {
    fi
 }
 
-function qnotes() {
-   local input_file=$(find ~/knowledge_vault/Hacking/ -type f | fzf --preview "bat --style numbers,changes --color=always {} | head -n 500")
-   # local input_file=$(find ~/Documents/knowledge_vault/Hacking/ -type f | fzf --preview "glow -p {}")
-   echo $input_file
-   [[ -z $input_file ]] && return 1
-   batcat "${input_file}"
-}
+# function qnotes() {
+#    local input_file=$(find ~/notes/knowledge_vault/Hacking/ -type f | fzf --preview "bat --style numbers,changes --color=always {} | head -n 500")
+#    # local input_file=$(find ~/Documents/knowledge_vault/Hacking/ -type f | fzf --preview "glow -p {}")
+#    echo $input_file
+#    [[ -z $input_file ]] && return 1
+#    batcat "${input_file}"
+# }
 
 
 function tldredit() {
    local note_path=~/notes/tldr-notes/
-   local input_file=$(find "${note_path}" -type f | fzf --preview "bat --color=always {}")
+   local input_file=$(find "${note_path}" -maxdepth 1 -type f  | fzf --preview "bat --color=always {}")
    [[ -z $input_file ]] && return 1
    [[ -f $input_file ]] && vim $input_file
 }
@@ -135,4 +153,3 @@ function TUNIP () {
     export TIP=$(ip -j -p a | jq '.[] | select(.ifname == "tun0") | .addr_info[] | select(.family == "inet") | .local' | tr -d '"')
     printf $TIP
 }
-export EDITOR="nvim"
