@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+
+## 
+
+usage() {
+	echo 'Looks up ip via ldap and creates a krbconfig based on DC domain'
+	echo 'USAGE: $0 <IP> '
+	exit 1
+}
+
+[[ -z $1 ]] && usage
+
+ip=$1
+domain=$(ldapsearch -x -H "ldap://$ip" -s base namingcontexts -b "" | awk -F'[=,]' \
+	'/namingcontexts:/ {print $2"."$4;exit}')
+
+[[ $? -ne 0 ]] && echo 'ldapsearch failed' && exit 1
+
+realm=${domain^^}
+outfile="$domain.krb.conf"
+
+cat << EOF | sed \
+-e "s/{{REALM_PLACEHOLDER}}/$realm/g" \
+-e "s/{{domain_placeholder}}/$domain/g" \
+-e "s/{{ip_placeholder}}/$ip/g" > "$outfile"
+[libdefaults]
+    default_realm = {{REALM_PLACEHOLDER}}
+    dns_lookup_realm = true
+    dns_lookup_kdc = true
+
+[realms]
+    {{REALM_PLACEHOLDER}} = {
+        kdc = {{ip_placeholder}}:88
+        admin_server = {{ip_placeholder}}:749
+        default_domain = {{domain_placeholder}}
+    }
+
+[domain_realm]
+    {{domain_placeholder}} = {{REALM_PLACEHOLDER}}
+    .{{domain_placeholder}} = {{REALM_PLACEHOLDER}}
+EOF
+
+echo "[+] Domain: $domain @ $ip"
+echo '[+] Created custom_krb5.conf'
+echo '' 
+echo 'To use: '
+echo "export KRB5_CONFIG=\$PWD/$outfile"
+echo ''
+

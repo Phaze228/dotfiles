@@ -22,7 +22,7 @@ fi
 
 template="$TEMPLATE_DIR/$post_style/template.md"
 
-new_post_title="$(date '+%Y-%m-%d')_${post_title// /-}"
+new_post_title="$(date '+%Y-%m-%d')-${post_title// /-}"
 # new_post_title="${new_post_title,,}"
 if [[ "$post_style" == "htb" ]]; then
    out_path="${HOME}/notes/chin-tech.github.io/_posts/"
