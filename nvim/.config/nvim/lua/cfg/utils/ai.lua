@@ -8,7 +8,7 @@ return {
   config = function()
     require('codecompanion').setup {
       env = {
-        api_key = '',
+        api_key = 'cmd: cat /home/alex/gemini_api',
       },
       strategies = {
         chat = {

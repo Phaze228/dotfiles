@@ -4,7 +4,7 @@
 	signingKey = 5F4D32D3879582B756022BC3A8FD7274AE27A315
 
 [commit]
-	gpgSign = true
+	gpgSign = false
 	template = /home/alex/.config/git/template
 
 [alias]
