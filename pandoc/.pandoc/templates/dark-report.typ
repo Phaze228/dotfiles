@@ -1,3 +1,4 @@
+#import "@preview/plotst:0.2.0":*
 // gomplate template file
 // pandoc md to pdf through typst template
 // this still a pandoc template, not typst script
@@ -43,9 +44,6 @@
     
 )
 
-
-// 全文使用到的变量，如颜色
-// 有引用到的变量均可放到本段
 
 // colors in page except codeblock
 #let theme=(
@@ -120,12 +118,12 @@
         // emoji font: "Apple Color Emoji"(macos), "Segoe UI Emoji"(windows), "Noto Color Emoji"(not macos/windows)
         // 
         font: fonts.normal.font,
-        size: 12pt,
+        size: 10pt,
     ),
     codeblock: (
         // mono font for code snippets
         font: fonts.codeblock.font,
-        size: 11pt,
+        size: 9pt,
         theme: ( path: "themes/ayu-dark.tmTheme")
     ),
     math: (
@@ -249,7 +247,7 @@
 #set text(
  	font: globals.normal.font.name,
  	fallback: true, 
- 	size: 12pt,
+ 	size: 10pt,
  	top-edge: "bounds",
  	bottom-edge: "bounds",
  	alternates: false,
@@ -304,7 +302,7 @@
 //    // justify: true,
 //  )
 // #set par(justify: false, leading: 1.5em, first-line-indent:2em )
-#set par(first-line-indent: 2em,
+#set par(first-line-indent: 0em,
     leading: 0.65em, // 行间距
     spacing: 1em, // 段间距
  ) 
@@ -526,7 +524,7 @@
     // font: globals.codeblock.font.name ,
     fallback: true,
     fill: rgb("#bfbdb6"),
-    size: 11pt,
+    size: 9pt,
     it)
 )
 
@@ -546,7 +544,7 @@
     fallback: true ,
     // when no syntax
     fill: rgb("#bfbdb6"),
-    size: 11pt,
+    size: 8pt,
   )
   set block(
     width: 100%,
@@ -578,9 +576,11 @@
 	it
 }
 
-#show link: underline.with(stroke: gradient.linear(..color.map.rainbow))
-#show link: set text(fill: rgb("95e6cb"))
+// #show link: underline.with(stroke: gradient.linear(..color.map.rainbow))
+// #show link: set text(fill: rgb("95e6cb"))
 
+#show link: underline.with(stroke: rgb("209520"))
+#show link: set text(fill: rgb("95e6cb"))
 // //
 // caption
 // 1. common caption
@@ -1325,25 +1325,28 @@ pandoc -fmarkdown to typst:
   }
 
 #let make_contact_table(t_title: none , contacts: none, ) = {
+  let tbl_stroke = rgb("#bfbdb6")
 let t_title = if t_title == none { "Assessor"} else {t_title }
   if contacts == none {
   [#"Todo!"]
 } else {
   set align(center)
-  align(center, table(
+  align(center, pad( top: 1em, table(
     columns: 3,
     align: center + horizon,
+    stroke: (1pt + tbl_stroke, 1pt + tbl_stroke),
     table.header(
       table.cell(colspan:3, [#{emph(t_title)}]),
       [#text(orange)[Name]], [#text(orange)[Title]], [#text(orange)[Email]],
     ), ..for (name, affiliation, email) in contacts {
-    (name, affiliation, email)})
+    (name, affiliation, email)}))
   
     )
   }
 }
 
 #let create_scopes_table(in_data: none, header: none) = {
+  let tbl_stroke = rgb("#bfbdb6")
   if in_data == none {
   [""]
 } else {
@@ -1351,6 +1354,7 @@ let t_title = if t_title == none { "Assessor"} else {t_title }
   align(center, table(
     columns: 1,
     align: center + horizon,
+    stroke: (1pt + tbl_stroke, 1pt + tbl_stroke),
     table.header(
       [#text(orange)[#header]]
     ), .. in_data
@@ -1358,19 +1362,67 @@ let t_title = if t_title == none { "Assessor"} else {t_title }
 }
 }
 
+
+
 #let make_scope_table(external: none, internal: none, rules: none) = {
-  if external != none {
-  create_scopes_table(in_data: external, header:"External")
-  }
-  if internal != none {
-  create_scopes_table(in_data: internal, header: "Internal")
-  }
-  if rules != none {
-  create_scopes_table(in_data: rules, header: "Rules of Engagement")
-  // list(for (rule) in rules { [#rule]})
-  }
+  // Use a grid to place the External and Internal tables side-by-side
+  pad(top: 2em, grid(
+    columns: (1fr, 1fr), // A two-column grid
+    column-gutter: 0.5em, // Adds some space between the tables
+
+    // Place the External table in the first column
+    if external != none {
+      create_scopes_table(in_data: external, header: "External Domains")
+    },
+
+    // Place the Internal table in the second column
+    if internal != none {
+      create_scopes_table(in_data: internal, header: "Internal Domains")
+    },
+  ))
+  
+  // Place the Rules of Engagement table below the grid
+  
+    if rules != none {
+      pad(top: 5em,create_scopes_table(in_data: rules, header: "Rules of Engagement"))
+    }
+  
 }
 
+#let gen_approach_type(approach_type: none, c_short: none ) = {
+  if  approach_type == none {
+    return
+  }
+  if approach_type.starts-with("B"){
+    "The Assesor performed testing under a “Black Box” approach. This means without credentials or any advance knowledge of {customer_name}'s externally facing environment with the goal of identifying unknown weaknesses. Testing was performed from a non-evasive standpoint with the goal of uncovering as many misconfigurations and vulnerabilities as possible. Testing was performed remotely from the Assessor's assessment labs. Each weakness identified was documented and manually investigated to determine exploitation possibilities and escalation potential. The assessor sought to demonstrate the full impact of every vulnerability, up to and including internal domain compromise. If the Assesor was able to gain a foothold in the internal network, {customer_name} as a result of external network testing, {customer_name} allowed for further testing including lateral movement and horizontal/vertical privilege escalation to demonstrate the impact of an internal network compromise.".replace("{customer_name}", c_short)}
+  
+}
+
+
+
+#let gen_report_type(approach_type: none) = {
+  if  approach_type == none {
+    return
+  }
+  if approach_type.starts-with("P"){
+    "Network Penetration Test"}
+  
+}
+
+
+// #let make_scope_table(external: none, internal: none, rules: none) = {
+//   if external != none {
+//   create_scopes_table(in_data: external, header:"External")
+//   }
+//   if internal != none {
+//   create_scopes_table(in_data: internal, header: "Internal")
+//   }
+//   if rules != none {
+//   create_scopes_table(in_data: rules, header: "Rules of Engagement")
+//   // list(for (rule) in rules { [#rule]})
+//   }
+// }
+//
 // #let substitute_approach(approach_type: none, )
 
 #let colorize_cvss(in_text) = {
@@ -1395,17 +1447,133 @@ let t_title = if t_title == none { "Assessor"} else {t_title }
 
   )[#text(
     black,
-      weight: "bold",
-
+    weight: "bold",
   )[#in_text]
+    ]
   ]
-  ]
-
   
 } else {
   in_text
 }
 }
+
+#let create_charts(in_text) = {
+  if in_text == none {
+    return in_text
+  }
+  let totals = (
+    low: 0,
+    medium: 0,
+    high: 0,
+    critical: 0,
+  )
+  let collection = (:)
+  for data in to-string(in_text).split("|") {
+    if data.trim() == "CVSS_SUMMARY" {continue}
+    let split_data = data.split(" ")
+    if split_data.len() != 5 { continue }
+    let domain = split_data.at(0).trim()
+    let curr_counts = (
+      low: int(split_data.at(1).trim()),
+      medium: int(split_data.at(2).trim()),
+      high: int(split_data.at(3).trim()),
+      critical: int(split_data.at(4).trim()),
+    )
+    collection.insert(domain, curr_counts)
+    totals.low += curr_counts.low
+    totals.medium += curr_counts.medium
+    totals.high += curr_counts.high
+    totals.critical += curr_counts.critical
+  }
+
+  // Iterate through each domain to create a table
+  // heading(level: 1, "Overall Totals")
+  v(4em)
+  align(center, table(
+    columns: 4,
+    stroke: 0.5pt + yellow,
+    align: center,
+    // Table headers for the totals
+    table.header(
+      table.cell(colspan: 4, [*Overall Totals*]),
+    [Low], [Medium], [High], [Critical],
+),
+    // Data cells for the totals
+    [#totals.low],
+    [#totals.medium],
+    [#totals.high],
+    [#totals.critical],
+  ))
+  for key in collection.keys() {
+    let value = collection.at(key)
+    
+    // Add a heading for the domain's table
+    // heading(level: 2, key)
+
+    // Create the table with headers and data
+    v(2em)
+    align(center, table(
+      columns: 4,
+      stroke: 0.5pt + yellow,
+      
+      align: center,
+    table.header(
+      table.cell(colspan: 4, [*#key*]),
+    [Low], [Medium], [High], [Critical],
+),
+      // Data cells
+      [#value.low],
+      [#value.medium],
+      [#value.high],
+      [#value.critical],
+    ))
+  }
+}
+
+// #let create_charts(in_text) = {
+//   if in_text == none {
+//     return in_text
+//   } 
+//   let totals = (
+//     low: 0,
+//     medium: 0,
+//     high: 0,
+//     critical: 0,
+//   )
+//   let collection = (:)
+//   for data in to-string(in_text).split("|") {
+//     if data.trim() == "CVSS_SUMMARY" {continue}
+//     let split_data = data.split(" ")
+//     if split_data.len() != 5 { continue }
+//     let domain = split_data.at(0).trim()
+//     let curr_counts = (
+//       low: int(split_data.at(1).trim()),
+//       medium: int(split_data.at(2).trim()),
+//       high: int(split_data.at(3).trim()),
+//       critical: int(split_data.at(4).trim()),
+//   )
+//     collection.insert(domain, curr_counts)
+//     totals.low += curr_counts.low
+//     totals.medium += curr_counts.medium
+//     totals.high += curr_counts.high
+//     totals.critical += curr_counts.critical
+//
+// }
+//   let x_axis = axis(values: ("Low", "Medium", "High", "Critical"))
+//   for key in collection.keys() {
+//     let value = collection.at(key)
+//     let pl_data = (
+//     ("Low", value.low ),
+//     ("Medium", value.medium),
+//     ("High", value.high),
+//     ("Critical", value.critical),
+//   )
+//   table(table_header: x_axis, ..for item in (value.low, value.medium, value.high, value.critical) )
+//
+//
+// }
+// }
+//
 
 #let print_pagesize = () => {
   // context {
@@ -1453,6 +1621,11 @@ let t_title = if t_title == none { "Assessor"} else {t_title }
     return
   }
 }
+
+// #let cvss_counter = state("cvss_ctr", (:))
+// #let curr_domain = state("curr_domain", "")
+
+
 #let whole_doc(
   title: none,
   subtitle: none,
@@ -1471,7 +1644,7 @@ let t_title = if t_title == none { "Assessor"} else {t_title }
   font: (),
   monofont: (),
   mathfont: (),
-  fontsize: 12pt,
+  fontsize: 10pt,
   sectionnumbering: none,
   pagenumbering: none,
   figurenumberingwithheadingnumbers: none,
@@ -1486,8 +1659,12 @@ let t_title = if t_title == none { "Assessor"} else {t_title }
   scope_rules: none,
   scope_internal: none,
   scope_external: none,
+  report_type: none,
+  approach_type: none,
   doc,
 ) = {
+
+
 
 // Document Element settings
 
@@ -1645,10 +1822,16 @@ let t_title = if t_title == none { "Assessor"} else {t_title }
   show "%company_contacts%" : _ => [#make_contact_table(t_title: company_name, contacts: company_contacts, )]
   show "%assesor_contacts%" : _ => [#make_contact_table(contacts: authors, )]
   show "%penetration_test_scope%" : _ => [#make_scope_table(external: scope_external, internal: scope_internal, rules: scope_rules)]
+  show "%report_type" : _ => [#gen_report_type(approach_type: report_type)]
+  show "%approach_type" : _ => [#gen_approach_type(approach_type: approach_type, c_short: company_shortname)]
   show regex("^CVSS \d\.\d+.*"): it =>  {
-  colorize_cvss(it)
+    colorize_cvss(it)
   }
-  // show "%domains%" : name => [#list(..domains)]
+  show regex("^CVSS_SUMMARY.*") : it => {
+    create_charts(it)
+  }
+
+ 
   doc
 }
 
@@ -1681,6 +1864,7 @@ $endif$
 $if(subtitle)$
   subtitle: [$subtitle$],
 $endif$
+
 // authors
 $if(author)$
   authors: (
@@ -1697,6 +1881,7 @@ $endif$
 $endfor$
     ),
 $endif$
+
 // Company Contacts
 $if(company_contacts)$
   company_contacts: (
@@ -1783,12 +1968,28 @@ $for(domains)$
 $endfor$
     ),
 $endif$
-$if(company_name)$ 
+$if(company_name)$
 company_name: "$company_name$",
 $endif$
 
 $if(company_shortname)$ 
 company_shortname: "$company_shortname$",
+$else$
+company_shortname: "The Company",
+$endif$
+
+
+$if(approach_type)$ 
+approach_type: "$approach_type$",
+$else$
+approach_type: "B",
+$endif$
+
+
+$if(report_type)$ 
+report_type: "$report_type$",
+$else$
+report_type: "P",
 $endif$
 
 //scope external
@@ -1864,3 +2065,5 @@ $for(include-after)$
 
 $include-after$
 $endfor$
+
+

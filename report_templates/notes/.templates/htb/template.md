@@ -2,6 +2,9 @@
 layout: post
 title: "_title_"
 date: _date_
+image:
+    path: ../assets/posts
+    alt: [HTB - ]
 # List Format
 table_of_contents:
     - Overview

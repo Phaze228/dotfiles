@@ -121,6 +121,44 @@ return {
           },
         },
       },
+      yamlls = {
+        settings = {
+          yaml = {
+            filetypes = { 'yaml', 'yml'},
+            validate = true,
+            format = { enable = true },
+            schemaDownload = { enable = true },
+            completion = true,
+            hover = true,
+            schemas = {
+              -- Kubernetes
+              -- ['https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.32.0-standalone-strict/all.json'] = 'k8*.{yaml,yml}',
+              -- kubernetes = '/*.yaml',
+              kubernetes = '*k8s*.yaml',
+              ['http://json.schemastore.org/kustomization'] = 'kustomization.{yml,yaml}',
+              ['http://json.schemastore.org/chart'] = 'Chart.{yml,yaml}',
+              -- Docker Compose Schema
+              ['http://json.schemastore.org/docker-compose'] = 'docker-compose.yml',
+
+              -- GitHub Actions Workflow Schema
+              ['http://json.schemastore.org/github-workflow'] = '.github/workflows/*.yml',
+
+              -- Helm Values Schema (Good for chart development)
+              ['http://json.schemastore.org/helm-values'] = 'values.yaml',
+
+              -- Cloudflare Workers/Pages configuration
+              ['http://json.schemastore.org/wrangler'] = 'wrangler.toml',
+
+              -- Ansible
+              ['http://json.schemastore.org/ansible-stable-2.9'] = 'roles/tasks/**/*.{yml,yaml}',
+
+              ['http://json.schemastore.org/prettierrc'] = '.prettierrc.{yml,yaml}',
+              ['http://json.schemastore.org/circleciconfig'] = '.circleci/**/*.{yml,yaml}',
+              -- [require('kubernetes').yamlls_schema()] = require('kubernetes').yamlls_filetypes(),
+            },
+          },
+        },
+      },
       -- rust_analyzer = {},
       -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
       --
@@ -129,6 +167,15 @@ return {
       --
       -- But for many setups, the LSP (`tsserver`) will work just fine
       -- tsserver = {},
+      --
+      zls = {},
+      terraformls = {
+        settings = {
+          filetypes = { 'tf', 'terraform' },
+        },
+      },
+      bashls = {},
+
       --
       --
       lua_ls = {
@@ -147,6 +194,14 @@ return {
       },
     }
 
+    for server_name, server_settings in pairs(servers) do
+      -- if next(server_settings) ~= nil then
+      vim.lsp.config(server_name, server_settings)
+      -- end
+    end
+
+
+
     require('mason').setup() -- NOTE: Setup Mason with defaults
 
     -- You can add other tools here that you want Mason to install
@@ -158,17 +213,21 @@ return {
     require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
     require('mason-lspconfig').setup {
-      handlers = {
-        function(server_name)
-          local server = servers[server_name] or {}
-          -- This handles overriding only values explicitly passed
-          -- by the server configuration above. Useful when disabling
-          -- certain features of an LSP (for example, turning off formatting for tsserver)
-          server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-          require('lspconfig')[server_name].setup(server)
-        end,
-      },
+      ensure_installed = {},
+      -- automatic_enable = true,
+      automatic_installation = true,
+      -- handlers = {
+      --   function(server_name)
+      --     local server = servers[server_name] or {}
+      -- --     -- This handles overriding only values explicitly passed
+      -- --     -- by the server configuration above. Useful when disabling
+      -- --     -- certain features of an LSP (for example, turning off formatting for tsserver)
+      --     server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
+      --     require('lspconfig')[server_name].setup(server)
+      --   end,
+      -- },
     }
+
   end,
 }
 

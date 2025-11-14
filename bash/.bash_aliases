@@ -3,6 +3,9 @@ export EDITOR="nvim"
 export MY_NOTES_PATH="$HOME/notes/"
 export MY_PENTEST_NOTES="$HOME/notes/knowledge_vault/Pentesting/"
 
+# Navigation
+alias ..="cd .."
+alias k='kubectl'
 
 # some more ls aliases
 alias ls='exa'
@@ -16,8 +19,8 @@ alias py="python3"
 alias v="nvim"
 alias vim="nvim"
 alias ipy="ipython3"
-alias tcopy="xclip -sel clip -i -d ':0'"
-alias tpaste="xclip -sel clip -o -d ':0'"
+alias tcopy="xclip -i -se clipboard -i" # -d '0'
+alias tpaste="xclip -i -se clipboard -o"
 # alias bat="batcat"
 alias nc="ncat"
 alias john="/opt/john/run/john"
@@ -72,6 +75,19 @@ function define() {
    curl -s https://api.dictionaryapi.dev/api/v2/entries/en/${word} | jq '.[] | [.word, .meanings[].definitions[].definition]'
 }
 
+function create_report_pdf() {
+   USAGE="Usage: <Input .md file> <Optional output name>"
+   local out_file=${2:-'report.pdf'}
+   local pandoc_args="markdown_mmd+emoji+strikeout+fancy_lists+task_lists+implicit_figures+link_attributes+inline_notes+tex_math_single_backslash+simple_tables+grid_tables+multiline_tables+table_captions+yaml_metadata_block-blank_before_blockquote"
+   local template_path=~/.pandoc/templates/dark-report.typ
+   [[ -z $1 ]] && echo "[-] Supply a markdown file!" && return
+
+   ln -s ~/.pandoc/themes/ ./
+   pandoc $1 --from $pandoc_args -t pdf --pdf-engine typst --template="$template_path" -o $out_file
+   [[ -d themes ]] && rm themes
+
+}
+
 fastmap() {
    host="${1}"
    path="${2}"
@@ -91,7 +107,7 @@ function cdp () {
 }
 
 function bhup() {
-   bh_yml=/opt/bloodhound/docker-compose.yml
+   bh_yml=~/programming/traefik/apps/bloodhound/docker-compose.yml
    [[ ! -f $bh_yml ]] && echo "[-] YAML file not in destination: $bh_file" && return 1
    docker compose ls | grep -q blood && echo '[+] Bloodhound already running!'&&  return 0
    docker compose -f $bh_yml up -d
@@ -116,6 +132,14 @@ function add_to_hosts() {
 #    batcat "${input_file}"
 # }
 
+function make_resume() {
+   local template_dir=~/programming/traefik/apps/typst_service/src/templates/
+   [[ -z $1 ]] && echo 'Must specify output file as first argument' && return
+   local output_file=$1
+   input_file=$(find $template_dir -type f -iname '*.typ' | fzf --preview "bat --style numbers,changes --color=always {}")
+   curl -s https://typst.home.chin-tech.org/generate --data-binary @$input_file -o $output_file
+   echo "[+] Resume Created @ $output_file"
+}
 
 function tldredit() {
    local note_path=~/notes/tldr-notes/
@@ -147,6 +171,18 @@ function timer () {
       declare time=$(( $start - $(date +%s)))
       printf '%s\r' "$(date -u -d "@$time" +%H:%M:%S)"
    done
+}
+
+function mk_post_banner() {
+   local pic_path="$1"
+   local out_path="$2"
+   local banner_type="$3"
+   if [ -z $banner_type ]; then
+      magick $pic_path -resize 300x300 -background none -gravity Center -extent 573x300 -sepia-tone 80% -fill "#cd7f32" -colorize 20% $out_path && echo 'Made HTB Banner'
+   else
+      magick $pic_path -resize 300x300 -background none -gravity Center -extent 573x300 -sepia-tone 90% -fill "#351c44" -colorize 40% $out_path && echo 'Made Vulnlab Banner'
+   fi
+
 }
 
 function TUNIP () {

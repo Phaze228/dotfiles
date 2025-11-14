@@ -77,18 +77,32 @@ GITP=$(__git_ps1 " (%s)")
 
 export PS1="\[$BOLD$UC\]\u\[$R\]@\[$BOLD$HC\]\h\[$R\]|\[$DC\]\w\[$R\]:\[$GC\]$(__git_ps1 '%s')\[$R\]$ "
 export PS2=">> "
+export PS_PENTEST="# \[$BOLD$UC\]\d\[$R\]@\[$BOLD$HC\]\t\[$R\]|\[$DC\]\w\[$R\]:\[$GC\]$(__git_ps1 '%s')\[$R\]$\n"
 
 # INITIAL_PROMPT="\[$BOLD$UC\]\u\[$R\]@\[$BOLD$HC\]\h\[$R\]|\[$DC\]\w\[$R\]:\[$GC\]$(__git_ps1 '%s')\[$R\]$ "
-
-PROMPT_COMMAND='
-    cur_dir="$PWD"
-    if [[ "$cur_dir" != "$prev_dir" ]]; then
-	PS1="\[$BOLD$UC\]\u\[$R\]@\[$BOLD$HC\]\h\[$R\]|\[$DC\]\w\[$R\]:\[$GC\]$(__git_ps1 '%s')\[$R\]$ "
-    else
-	PS1=${PS1/w/W}
-    fi 
-    prev_dir="$PWD"
-'
+#
+if [[ $PENTEST = true ]]; then
+    export PS1=$PS_PENTEST
+    PROMPT_COMMAND='
+	cur_dir="$PWD"
+	if [[ "$cur_dir" != "$prev_dir" ]]; then
+	    PS1="# \[$BOLD$UC\]\d\[$R\]@\[$BOLD$HC\]\t\[$R\]|\[$DC\]\w\[$R\]:\[$GC\]$(__git_ps1 '%s')\[$R\]$\n"
+	else
+	    PS1=${PS1/w/W}
+	fi 
+	prev_dir="$PWD"
+    '
+else
+    PROMPT_COMMAND='
+	cur_dir="$PWD"
+	if [[ "$cur_dir" != "$prev_dir" ]]; then
+	    PS1="\[$BOLD$UC\]\u\[$R\]@\[$BOLD$HC\]\h\[$R\]|\[$DC\]\w\[$R\]:\[$GC\]$(__git_ps1 '%s')\[$R\]$ "
+	else
+	    PS1=${PS1/w/W}
+	fi 
+	prev_dir="$PWD"
+    '
+fi
 
 # enable color support of ls and also add handy aliases
 if [ -x /usr/bin/dircolors ]; then
@@ -141,9 +155,21 @@ PATHS_TO_ADD=(
     # "/opt/mobile_app_dev/android/platform-tools"
 )
 
+## Android Development
+export ANDROID_HOME=$HOME/Android/Sdk/
+ANDROID_PATHS=(
+    "emulator"
+    "tools"
+    "tools/bin"
+    "platform-tools"
+    )
 
 
+
+
+export CHROME_EXECUTABLE=$(which chromium)
 export PATH=$PATH:$(echo ${PATHS_TO_ADD[*]} | tr ' ' ':')
+export PATH=$PATH:$(echo $ANDROID_HOME/${ANDROID_PATHS[*]} | tr ' ' ':')
 # export ANDROID_HOME=/opt/mobile_app_dev/android
 # bun
 # export BUN_INSTALL="$HOME/.bun"
@@ -227,6 +253,9 @@ function btc() {
 ## FZF Bindings ##
 [ -f /usr/share/fzf/completion.bash ] && . /usr/share/fzf/completion.bash
 [ -f /usr/share/fzf/key-bindings.bash ] && .  /usr/share/fzf/key-bindings.bash
+
+## Bash Completion
+[ -f /usr/share/bash-completion/bash_completion ] && . /usr/share/bash-completion/bash_completion
 
 ## Source local configs ##
 

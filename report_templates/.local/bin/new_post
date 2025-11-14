@@ -26,6 +26,10 @@ new_post_title="$(date '+%Y-%m-%d')-${post_title// /-}"
 # new_post_title="${new_post_title,,}"
 if [[ "$post_style" == "htb" ]]; then
    out_path="${HOME}/notes/chin-tech.github.io/_posts/"
+elif [[ "$post_style" == "report" ]]; then
+   mkdir -p PENTEST_REPORT/assets
+   pushd PENTEST_REPORT
+   out_path="./"
 else
    out_path="./"
 fi

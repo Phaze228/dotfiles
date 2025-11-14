@@ -11,8 +11,8 @@ def load_file(bh_file: str) -> dict:
         return json.load(f)
 
 
-groups = load_file("./20250801110257_certificate-htb_groups.json")
-users = load_file("./20250801110257_certificate-htb_users.json")
+# groups = load_file("./20250801110257_certificate-htb_groups.json")
+# users = load_file("./20250801110257_certificate-htb_users.json")
 
 def get_sid_names(users_dict) -> dict:
     sid_to_names = {}
