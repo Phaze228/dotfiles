@@ -88,5 +88,25 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
   desc = 'Sets filetype for Terraform files',
 })
 
+vim.filetype.add {
+  extension = {
+    mdx = 'markdown',
+  },
+}
+vim.filetype.add {
+  extension = {
+    -- Systemd standard
+    service = 'systemd',
+    timer = 'systemd',
+    mount = 'systemd',
+    -- Podman Quadlets (RHEL 10 specific)
+    container = 'systemd',
+    volume = 'systemd',
+    network = 'systemd',
+    kube = 'systemd',
+    pod = 'systemd',
+  },
+}
+
 package.path = package.path .. ';' .. os.getenv 'HOME' .. '/.dotfiles/nvim/.config/nvim/?.lua' -- Handle the symlink problem with using gnu Stow
 require 'pkg.lazy'

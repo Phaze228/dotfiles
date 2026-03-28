@@ -121,10 +121,32 @@ return {
           },
         },
       },
+      -- The Rust version (systemd-lsp) is mapped to 'systemd_ls' in lspconfig
+      systemd_lsp = {
+        -- This ensures lspconfig attaches to the right filetypes
+        cmd = { vim.fn.expand '~/.local/share/nvim/mason/bin/systemd-lsp' },
+        filetypes = {
+          'systemd',
+          'service',
+          'timer',
+          'mount',
+          'automount',
+          'socket',
+          'container',
+          'volume',
+          'network',
+          'kube',
+          'pod',
+        },
+        -- If you want to force the specific binary path from Mason:
+        -- cmd = { vim.fn.expand('~/.local/share/nvim/mason/bin/systemd-lsp') },
+        settings = {},
+      },
+
       yamlls = {
         settings = {
           yaml = {
-            filetypes = { 'yaml', 'yml'},
+            filetypes = { 'yaml', 'yml' },
             validate = true,
             format = { enable = true },
             schemaDownload = { enable = true },
@@ -200,8 +222,6 @@ return {
       -- end
     end
 
-
-
     require('mason').setup() -- NOTE: Setup Mason with defaults
 
     -- You can add other tools here that you want Mason to install
@@ -227,7 +247,6 @@ return {
       --   end,
       -- },
     }
-
   end,
 }
 

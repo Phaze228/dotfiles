@@ -55,6 +55,8 @@ alias htbl="sudo openvpn ~/.hackthebox/lab.ovpn; . ~/.bashrc"
 alias copyflags="cat user.flag | tcopy; sleep 3; cat root.flag| tcopy"
 alias pandoctmpls="cd /usr/share/haskell-pandoc/data/templates/"
 
+# alias buildserver="xfreerdp3 /args-from:/home/alex/.rdpcreds"
+
 # Hack Tools #
 # alias john="/opt/john/run/john"
 # alias zip2john="/opt/john/run/zip2john"
@@ -62,6 +64,15 @@ alias pandoctmpls="cd /usr/share/haskell-pandoc/data/templates/"
 
 
 
+# Windows Buildserver - 10.0.0.60
+function buildserver () {
+   xfreerdp3 /args-from:$HOME/.rdpcreds
+}
+
+
+function sms_steph () {
+   kdeconnect-cli --send-sms "$1" --destination 8083927332 --device 113fa78e352e44ee9090c95498580e50 --attachment $2
+}
 
 function tmx_send () {
    tmux synchronize-panes on
@@ -145,21 +156,25 @@ function tldredit() {
    local note_path=~/notes/tldr-notes/
    local input_file=$(find "${note_path}" -maxdepth 1 -type f  | fzf --preview "bat --color=always {}")
    [[ -z $input_file ]] && return 1
-   [[ -f $input_file ]] && vim $input_file
+   [[ -f $input_file ]] && ${EDITOR-vim} $input_file
 }
 
 function tldrnew() {
-   local note="${1}"
-   local patch="${2}"
-   [[ ! -z $patch ]] && patch='patch.md'
-   [[ -z $patch ]] && patch='page.md'
    local note_path=~/notes/tldr-notes/
-   local exists=$(ls ${note_path}${note}.${patch})
-   if [[ ! -z $exists ]]; then
-      echo "[[ Note: $note.$patch.md Exists! Try tldredit ]]"
+   local note_name="${1}"
+   local is_patch="${2}"
+   local ext
+   if [[ ! -z $is_patch ]]; then
+      ext='patch.md'
+   else
+      ext='page.md'
+   fi
+   local new_file=${note_path}${note_name}.${ext}
+   if [[ -e $new_file ]]; then
+      echo "[[ Note: ${new_file} Exists! Try tldredit ]]"
       return 1
    fi
-   nvim "${note_path}${note}.${patch}"
+   ${EDITOR-vim} "${note_path}${note_name}.${ext}"
 
 
 }
@@ -174,14 +189,20 @@ function timer () {
 }
 
 function mk_post_banner() {
+   local USAGE="mk_post_banner <input_file> <output_file> <post_type (default HTB)>"
    local pic_path="$1"
    local out_path="$2"
    local banner_type="$3"
-   if [ -z $banner_type ]; then
-      magick $pic_path -resize 300x300 -background none -gravity Center -extent 573x300 -sepia-tone 80% -fill "#cd7f32" -colorize 20% $out_path && echo 'Made HTB Banner'
-   else
-      magick $pic_path -resize 300x300 -background none -gravity Center -extent 573x300 -sepia-tone 90% -fill "#351c44" -colorize 40% $out_path && echo 'Made Vulnlab Banner'
-   fi
+   case "$banner_type" in
+      vl) magick $pic_path -resize 300x300 -background none -gravity Center -extent 573x300 -sepia-tone 90% -fill "#351c44" -colorize 40% $out_path && echo 'Made Vulnlab Banner';;
+      blog) magick "$pic_path" -resize 300x300 -background none -gravity Center -extent 573x300 -sepia-tone 85% -fill "#2c3e50" -modulate 110,120 -colorize 50% "$out_path" && echo 'Made Blog Banner';;
+      *)  magick $pic_path -resize 300x300 -background none -gravity Center -extent 573x300 -sepia-tone 80% -fill "#cd7f32" -colorize 20% $out_path && echo 'Made HTB Banner';;
+   esac
+   # if [ -z $banner_type ]; then
+   #    magick $pic_path -resize 300x300 -background none -gravity Center -extent 573x300 -sepia-tone 80% -fill "#cd7f32" -colorize 20% $out_path && echo 'Made HTB Banner'
+   # else
+   #    magick $pic_path -resize 300x300 -background none -gravity Center -extent 573x300 -sepia-tone 90% -fill "#351c44" -colorize 40% $out_path && echo 'Made Vulnlab Banner'
+   # fi
 
 }
 

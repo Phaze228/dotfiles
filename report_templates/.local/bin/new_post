@@ -22,10 +22,11 @@ fi
 
 template="$TEMPLATE_DIR/$post_style/template.md"
 
-new_post_title="$(date '+%Y-%m-%d')-${post_title// /-}"
+post_date=$(date '+%Y-%m-%d')
+new_post_title="${post_title// /-}_$post_date"
 # new_post_title="${new_post_title,,}"
 if [[ "$post_style" == "htb" ]]; then
-   out_path="${HOME}/notes/chin-tech.github.io/_posts/"
+   out_path="${HOME}/notes/chin-tech.github.io/src/content/blog/HTB/"
 elif [[ "$post_style" == "report" ]]; then
    mkdir -p PENTEST_REPORT/assets
    pushd PENTEST_REPORT
@@ -37,6 +38,6 @@ fi
 
 out_file="${out_path}${new_post_title,,}.md"
 
-sed -e "s/_title_/${post_title}/" -e "s/_date_/$(date)/" -e "s/_creds_/${initial_creds}/" $template > "${out_file}"
+sed -e "s/_title_/${post_title}/g" -e "s/_date_/$post_date/g" -e "s/_creds_/${initial_creds}/" $template > "${out_file}"
 
 nvim "${out_file}"

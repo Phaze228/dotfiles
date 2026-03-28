@@ -55,7 +55,7 @@ cmd = "pavucontrol"
 
 [[block]]
 block = "bluetooth"
-mac = "2C:41:A1:2C:6A:B1"
+mac = "E4:58:BC:63:FA:B6"
 format = " $icon $name.str(max_w:5) {$percentage|}"
 
 [[block]]
@@ -66,7 +66,7 @@ full_format = "$icon"
 [[block]]
 block = "time"
 interval = 5
-timezone = "Pacific/Honolulu"
+# timezone = "Arizona"
 # format = "$timestamp.datetime(f:'%a %b %d %R') "
 [block.format]
 full = "$timestamp.datetime(f:'%a %m-%d-%Y %R %Z', l:en_US) "

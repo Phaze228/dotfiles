@@ -65,7 +65,7 @@ bindsym $mod+b exec $term -e lf
 # mail
 bindsym $mod+m exec $term -e mutt
 # web-browser
-bindsym $mod+w exec zen-browser
+bindsym $mod+w exec zen
 
 # kill focused window
 bindsym $mod+Shift+q kill
