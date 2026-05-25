@@ -109,6 +109,30 @@ return {
       -- clangd = {},
       -- gopls = {},
       -- pyright = {},
+      omnisharp = {
+        -- root_dir = '~/programming/windows/CAPE/build/',
+        --   local arg = ...
+        --   local path = type(arg) == 'table' and arg.bufname or arg
+        --   if not path or path == '' or type(path) == 'number' then
+        --     path = vim.api.nvim_buf_get_name(0)
+        --   end
+        --   return vim.fs.root(path, { '*.sln', '*.csproj', '.git' })
+        -- end,
+
+        settings = {
+          init_options = {
+
+            -- useModernNet = false,
+          },
+          Sdk = {
+            IncludePrereleases = true,
+          },
+          MsBuild = {
+            UseLegacySdk = true,
+            -- MSBuildPath = '/usr/lib/mono/msbuild/Current/bin',
+          },
+        },
+      },
       jdtls = {
         settings = {
           configuration = {

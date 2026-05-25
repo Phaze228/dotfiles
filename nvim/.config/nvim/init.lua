@@ -108,5 +108,12 @@ vim.filetype.add {
   },
 }
 
+--- Reduced deprecation warnings
+-- local orig_deprecate = vim.deprecate
+--
+-- vim.deprecate = function(name, alternative, version, plugin, backtrace)
+--   return
+-- end
+
 package.path = package.path .. ';' .. os.getenv 'HOME' .. '/.dotfiles/nvim/.config/nvim/?.lua' -- Handle the symlink problem with using gnu Stow
 require 'pkg.lazy'

@@ -31,7 +31,7 @@ alias utc="date -u '+%Y-%m-%d %H:%M:%S'"
 alias dtpdate="date +%Y-%m-%d\ %H:%M:%S.%N"
 
 # Configs #
-alias vimcfg="nvim ~/.config/nvim/init.lua"
+alias vimcfg="pushd ~/.config/nvim/ && nvim init.lua && popd"
 alias i3cfg="nvim ~/.config/i3/config"
 alias bashcfg="nvim ~/.bashrc && source ~/.bashrc"
 alias tmuxcfg="nvim ~/.config/tmux/tmux.conf"
@@ -54,6 +54,7 @@ alias htbs="sudo openvpn ~/.hackthebox/seasonal.ovpn; . ~/.bashrc"
 alias htbl="sudo openvpn ~/.hackthebox/lab.ovpn; . ~/.bashrc"
 alias copyflags="cat user.flag | tcopy; sleep 3; cat root.flag| tcopy"
 alias pandoctmpls="cd /usr/share/haskell-pandoc/data/templates/"
+alias winrm="evil-winrm-py"
 
 # alias buildserver="xfreerdp3 /args-from:/home/alex/.rdpcreds"
 
@@ -72,6 +73,17 @@ function buildserver () {
 
 function sms_steph () {
    kdeconnect-cli --send-sms "$1" --destination 8083927332 --device 113fa78e352e44ee9090c95498580e50 --attachment $2
+}
+
+function update_discord() {
+   curl "https://discord.com/api/download?platform=linux&format=tar.gz" -sL | sudo tar -xzf - -C /opt/discord --strip-components=1
+   if [[ $? -eq 0 ]]; then
+      echo "[+] Discord successfully extracted to /opt/discord"
+      sudo ln -sf /opt/discord/discord /usr/local/bin/discord
+   else
+      echo "[-] Failed :("
+   fi
+
 }
 
 function tmx_send () {
@@ -118,7 +130,7 @@ function cdp () {
 }
 
 function bhup() {
-   bh_yml=~/programming/traefik/apps/bloodhound/docker-compose.yml
+   bh_yml=/opt/bloodhound/docker-compose.yml
    [[ ! -f $bh_yml ]] && echo "[-] YAML file not in destination: $bh_file" && return 1
    docker compose ls | grep -q blood && echo '[+] Bloodhound already running!'&&  return 0
    docker compose -f $bh_yml up -d
@@ -207,6 +219,8 @@ function mk_post_banner() {
 }
 
 function TUNIP () {
-    export TIP=$(ip -j -p a | jq '.[] | select(.ifname == "tun0") | .addr_info[] | select(.family == "inet") | .local' | tr -d '"')
+    local TIP=$(ip -j -p a | jq '.[] | select(.ifname == "tun0" or .ifname == "tun1") | .addr_info[] | select(.family == "inet") | .local' | tr -d '"')
     printf $TIP
 }
+
+

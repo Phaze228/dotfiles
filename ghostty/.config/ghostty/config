@@ -1,7 +1,11 @@
 # Dev Stuff #
 gtk-single-instance = true
 ## Themes ##
-theme = Horizon
+# theme = Popping And Locking
+#theme = Ultra Violent
+# theme = Everforest Dark Hard
+theme = Catppuccin Macchiato 
+#theme = Horizon
 
 ## Windows ##
 

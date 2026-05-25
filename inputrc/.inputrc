@@ -9,6 +9,7 @@ set show-all-if-ambiguous on
 set mark-symlinked-directories on
 
 set completion-ignore-case on
+set completion-map-case on
 
 # use GNU ls colors for tab-completion as well
 set colored-stats on

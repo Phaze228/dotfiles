@@ -63,46 +63,79 @@ LIGHT_BLUE=$(tput setaf 44)  # Approximate light blue
 DARK_BLUE=$(tput setaf 31)    # Approximate dark blue
 DARK_PURPLE=$(tput setaf 93)   # Approximate dark purple
 LIGHT_PURPLE=$(tput setaf 127)   # Approximate dark purple
+PURPLE2_LIGHT=$(tput setaf 135)   # Approximate dark purple
 CYAN=$(tput setaf 51)        # Approximate cyan
+ORANGEY=$(tput setaf 202)
+PINKY=$(tput setaf 207)
 RED=$(tput setaf 1)         # Red
 GREEN=$(tput setaf 10)
+LIGHTGREEN=$(tput setaf 118)
+ROOT_COLOR=$(tput setaf 124)
+
 
 
 ## Prompt Colors ##
-UC=$LIGHT_PURPLE  #User \u Color
+UC=$LIGHT_PURPLE #User \u Color
 HC=$DARK_BLUE     #Host \h Color
-DC=$GREEN         #Dir \w Color
+DC=$LIGHTGREEN #Dir \w Color
 GC=$RED           #GIT    Color
 GITP=$(__git_ps1 " (%s)")
 
-export PS1="\[$BOLD$UC\]\u\[$R\]@\[$BOLD$HC\]\h\[$R\]|\[$DC\]\w\[$R\]:\[$GC\]$(__git_ps1 '%s')\[$R\]$ "
-export PS2=">> "
-export PS_PENTEST="# \[$BOLD$UC\]\d\[$R\]@\[$BOLD$HC\]\t\[$R\]|\[$DC\]\w\[$R\]:\[$GC\]$(__git_ps1 '%s')\[$R\]$\n"
 
-# INITIAL_PROMPT="\[$BOLD$UC\]\u\[$R\]@\[$BOLD$HC\]\h\[$R\]|\[$DC\]\w\[$R\]:\[$GC\]$(__git_ps1 '%s')\[$R\]$ "
-#
-if [[ $PENTEST = true ]]; then
-    export PS1=$PS_PENTEST
-    PROMPT_COMMAND='
-	cur_dir="$PWD"
-	if [[ "$cur_dir" != "$prev_dir" ]]; then
-	    PS1="# \[$BOLD$UC\]\d\[$R\]@\[$BOLD$HC\]\t\[$R\]|\[$DC\]\w\[$R\]:\[$GC\]$(__git_ps1 '%s')\[$R\]$\n"
+function wrap() {
+   echo -n "\[$1\]"
+}
+
+function gen_prompt() {
+    local RESET=$(wrap $R)
+    local B_USER
+    if [[ $EUID -eq 0 ]]; then 
+	 B_USER=$(wrap $BOLD$ROOT_COLOR)
+    else
+	 B_USER=$(wrap $BOLD$UC)
+    fi
+
+
+    local B_HOST=$(wrap $BOLD$HC)
+    local D_COLOR=$(wrap $DC)
+    local G_COLOR=$(wrap $GC)
+    
+    ##
+    local PS_USER="${B_USER}\u${RESET}"
+    local PS_HOST="${B_HOST}\h${RESET}"
+    local PS_DIR="${D_COLOR}\w${RESET}"
+    local PS_GIT="${G_COLOR}$(__git_ps1  '%s')${RESET}"
+    ##
+    local PEN_TIME="${B_USER}\d \t${RESET}"
+    if [[ -z $1 ]]; then 
+	PS1="[${PS_USER}@${PS_HOST}|${PS_DIR}:${PS_GIT}]\$ "
+    else
+	PS1="#[${PEN_TIME}]\$\n"
+    fi
+
+}
+
+
+gen_prompt 
+export PS1
+export PS2=">> "
+
+function dynamic_prompt() {
+    if [[ $PWD != $PREV_DIR ]]; then
+	if [[ $PENTEST = "true" ]]; then
+	    gen_prompt true
 	else
-	    PS1=${PS1/w/W}
-	fi 
-	prev_dir="$PWD"
-    '
-else
-    PROMPT_COMMAND='
-	cur_dir="$PWD"
-	if [[ "$cur_dir" != "$prev_dir" ]]; then
-	    PS1="\[$BOLD$UC\]\u\[$R\]@\[$BOLD$HC\]\h\[$R\]|\[$DC\]\w\[$R\]:\[$GC\]$(__git_ps1 '%s')\[$R\]$ "
-	else
-	    PS1=${PS1/w/W}
-	fi 
-	prev_dir="$PWD"
-    '
-fi
+	    gen_prompt
+	fi
+	export PS1
+    else
+	PS1="${PS1/w/W}"
+    fi
+    export PREV_DIR=$PWD
+}
+
+unset PROMPT_COMMAND
+PROMPT_COMMAND=dynamic_prompt
 
 # enable color support of ls and also add handy aliases
 if [ -x /usr/bin/dircolors ]; then
@@ -133,6 +166,28 @@ unset lesscolors
 #   sleep 10; alert
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
+# function _ADD_TO_PATH() {
+#     if [[ ":$PATH:" != *"$1" ]]; then
+# 	if [[ $2 =~ 'prepend' ]];then
+# 	    export PATH=$1:$PATH
+# 	else
+# 	    export PATH=$PATH:$1
+# 	fi
+#     fi
+#
+# }
+
+_ADD_TO_PATH() {
+    local target_path="${1/#\~/$HOME}"
+    
+    if [[ ":$PATH:" != *":$target_path:"* ]]; then
+        if [[ "$2" == "prepend" ]]; then
+            export PATH="$target_path:$PATH"
+        else
+            export PATH="$PATH:$target_path"
+        fi
+    fi
+}
 
 ### Path Configuration ###
 PATHS_TO_ADD=(
@@ -141,6 +196,7 @@ PATHS_TO_ADD=(
     "~/go/bin"
     "~/.local/share/gem/ruby/3.3.0/bin"
     "~/.local/share/gem/ruby/3.4.0/bin"
+    "/home/alex/.dotnet/tools"
     # "~/.local/share/uv/python/cpython-3.13.3-linux-x86_64-gnu/bin/"
     # "~/.local/flutter/"
     # "/home/phaze/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/"
@@ -149,6 +205,7 @@ PATHS_TO_ADD=(
     # "/usr/share/EyeWitness/Python/"
     # "/usr/share/zen"
     "/opt/john/run/"
+    "~/.npm-global/bin"
     # "/opt/mobile_app_dev/flutter/bin"
     # "/opt/mobile_app_dev/android/cmdline-tools/bin"
     # "/opt/mobile_app_dev/android/emulator/"
@@ -166,10 +223,13 @@ ANDROID_PATHS=(
 
 
 
+for path in "${PATHS_TO_ADD[@]}"; do _ADD_TO_PATH $path ; done
+for path in "${ANDROID_PATHS[@]}"; do _ADD_TO_PATH "${ANDROID_HOME}${path}" ; done
+export PATH
 
 export CHROME_EXECUTABLE=$(which chromium)
-export PATH=$PATH:$(echo ${PATHS_TO_ADD[*]} | tr ' ' ':')
-export PATH=$PATH:$(echo $ANDROID_HOME/${ANDROID_PATHS[*]} | tr ' ' ':')
+#export PATH=$PATH:$(echo ${PATHS_TO_ADD[*]} | tr ' ' ':')
+#export PATH=$PATH:$(echo $ANDROID_HOME/${ANDROID_PATHS[*]} | tr ' ' ':')
 # export ANDROID_HOME=/opt/mobile_app_dev/android
 # bun
 # export BUN_INSTALL="$HOME/.bun"
@@ -183,8 +243,23 @@ export PATH=$PATH:$(echo $ANDROID_HOME/${ANDROID_PATHS[*]} | tr ' ' ':')
 ## AWS CLI ##
 [ -f '/usr/bin/aws_completer' ] && complete -C '/usr/bin/aws_completer' aws
 
-
-export MANPAGER='less -s -M +Gg'
+export LESS_TERMCAP_mb=$(tput bold; tput setaf 123)
+export LESS_TERMCAP_md=$(tput bold; tput setaf 147)
+export LESS_TERMCAP_me=$(tput sgr0)
+export LESS_TERMCAP_se=$(tput sgr0)
+export LESS_TERMCAP_so=$(tput bold; tput setaf 232; tput setab 127)
+export LESS_TERMCAP_ue=$(tput sgr0)
+export LESS_TERMCAP_us=$(tput smul; tput bold; tput setaf 168)
+export LESS_TERMCAP_mr=$(tput rev)
+export LESS_TERMCAP_mh=$(tput dim)
+export LESS_TERMCAP_ZN=$(tput ssubm)
+export LESS_TERMCAP_ZV=$(tput rsubm)
+export LESS_TERMCAP_ZO=$(tput ssupm)
+export LESS_TERMCAP_ZW=$(tput rsupm)
+# export MANPAGER='less -s -M +Gg'
+export GROFF_NO_SGR=1
+export MANPAGER='less'
+# export MANPAGER='nvim +Man!'
 export LESS="--RAW-CONTROL-CHARS"
 
 
@@ -232,6 +307,10 @@ function print_colors() {
     printf "\n"
 }
 
+function print_esc_chars() {
+    for c in {0..255}; do tput setaf $c; tput setaf $c | cat -v; echo =$c; done | column
+}
+
 function btc() {
     local name="{$1-}"
     # [[ "$name" =~ "buds" ]] && bluetoothctl connect AC:3E:B1:84:35:BB  ## ear_buds
@@ -263,3 +342,4 @@ function btc() {
 
 [ -f ~/.bash_aliases ] && . ~/.bash_aliases
 [ -f ~/.bash_github ] && . ~/.bash_github
+# export PATH="$HOME/.npm-global/bin:$PATH"
