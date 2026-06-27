@@ -7,8 +7,6 @@ esac
 
 ## HISTORY SETTINGS ###
 # don't put duplicate lines or lines starting with space in the history.
-# See bash(1) for more options
-# for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
 HISTCONTROL=ignoreboth
 HISTSIZE=1000
 HISTFILESIZE=2000
@@ -39,8 +37,8 @@ fi
 
 
 ### JQ COLORS ###
-#    1 ; 2    ; 3  ; 4    ;   5   ;  6   ;   7   ;  8   
-#  null;false;true;numbers;strings;arrays;objects;object-keys
+#    1 ; 2    ; 3  ; 4     ;   5   ;  6   ;   7   ;  8   
+#  null;false ;true;numbers;strings;arrays;objects;object-keys
 export JQ_COLORS="0;90:0;39:0;39:0;39:0;34:1;39:1;39:1;34"
 
 
@@ -196,7 +194,8 @@ PATHS_TO_ADD=(
     "~/go/bin"
     "~/.local/share/gem/ruby/3.3.0/bin"
     "~/.local/share/gem/ruby/3.4.0/bin"
-    "/home/alex/.dotnet/tools"
+    "~/flutter/bin/"
+    "~/.dotnet/tools"
     # "~/.local/share/uv/python/cpython-3.13.3-linux-x86_64-gnu/bin/"
     # "~/.local/flutter/"
     # "/home/phaze/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/"
@@ -205,6 +204,7 @@ PATHS_TO_ADD=(
     # "/usr/share/EyeWitness/Python/"
     # "/usr/share/zen"
     "/opt/john/run/"
+    "/opt/Android/cmdline-tools/bin"
     "~/.npm-global/bin"
     # "/opt/mobile_app_dev/flutter/bin"
     # "/opt/mobile_app_dev/android/cmdline-tools/bin"

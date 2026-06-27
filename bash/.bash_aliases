@@ -56,6 +56,9 @@ alias copyflags="cat user.flag | tcopy; sleep 3; cat root.flag| tcopy"
 alias pandoctmpls="cd /usr/share/haskell-pandoc/data/templates/"
 alias winrm="evil-winrm-py"
 
+# Windows Build Dir
+alias wbd="cd ~/programming/windows"
+alias k8='cd ~/programming/k8s-lab/'
 # alias buildserver="xfreerdp3 /args-from:/home/alex/.rdpcreds"
 
 # Hack Tools #
@@ -67,12 +70,16 @@ alias winrm="evil-winrm-py"
 
 # Windows Buildserver - 10.0.0.60
 function buildserver () {
-   xfreerdp3 /args-from:$HOME/.rdpcreds
+   xfreerdp3 /args-from:file:$HOME/.rdpcreds
 }
 
 
+
 function sms_steph () {
-   kdeconnect-cli --send-sms "$1" --destination 8083927332 --device 113fa78e352e44ee9090c95498580e50 --attachment $2
+   local n="8083"
+   local x="92"
+   local y="7332"
+   kdeconnect-cli --send-sms "$1" --destination "$n$x$y" --device 113fa78e352e44ee9090c95498580e50 --attachment "$2"
 }
 
 function update_discord() {
@@ -136,7 +143,7 @@ function bhup() {
    docker compose -f $bh_yml up -d
 }
 
-function add_to_hosts() {
+function add-to-hosts() {
    [[ -z $1 ]] && echo 'Usage: <ip> <domain> to add a box to HTB boxes' && return
    local ip=$1
    local domain=$2
@@ -172,9 +179,14 @@ function tldredit() {
 }
 
 function tldrnew() {
+   
    local note_path=~/notes/tldr-notes/
    local note_name="${1}"
    local is_patch="${2}"
+   if [[ -z $note_name ]]; then
+      echo "USAGE: tldrnew <name> <?patch> "
+      return 1
+   fi
    local ext
    if [[ ! -z $is_patch ]]; then
       ext='patch.md'
@@ -216,6 +228,25 @@ function mk_post_banner() {
    #    magick $pic_path -resize 300x300 -background none -gravity Center -extent 573x300 -sepia-tone 90% -fill "#351c44" -colorize 40% $out_path && echo 'Made Vulnlab Banner'
    # fi
 
+}
+
+function compressLePdf() {
+   local USAGE="[!] compressLePdf <Input> <Output>"
+   if [[ -z $1 ]]; then
+      echo $USAGE
+      return 1
+   fi
+   if [[ -z $2 ]]; then
+      echo $USAGE
+      return 1
+   fi
+
+   local input="$1"
+   local output="$2"
+   if [[ ! $output =~ ".pdf" ]]; then
+      local output="$output.pdf"
+   fi
+   gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/ebook -dNOPAUSE -dBATCH -dQUIET -sOutputFile="$output" "$input"
 }
 
 function TUNIP () {
