@@ -16,6 +16,7 @@ alias l='exa -CF'
 
 
 alias py="python3"
+alias nxc='PYTHONWARNINGS="ignore" nxc'
 alias v="nvim"
 alias vim="nvim"
 alias ipy="ipython3"
@@ -145,13 +146,37 @@ function bhup() {
 
 function add-to-hosts() {
    [[ -z $1 ]] && echo 'Usage: <ip> <domain> to add a box to HTB boxes' && return
-   local ip=$1
-   local domain=$2
-   if grep -q $ip /etc/hosts; then
-      sudo sed -i "/$ip/s/[[:space:]]$domain\$//; /$ip/s/\$/ ${domain}/" /etc/hosts
+   local ip=""
+   local ip_regex='[0-9]+\.[0-9]+\.'
+   local -a domains=()
+   if [[ $1 =~ $ip_regex ]]; then
+      ip=$1
+      domains=("${@:2}")
    else
-      sudo sed -i "/HTB Boxes/a${ip}  ${domain}" /etc/hosts
+      ip="${@: -1}"
+      domains=("${@:1:$#-1}")
    fi
+
+   for d in "${domains[@]}"; do
+      if grep -qw "$ip" /etc/hosts; then
+         if ! grep -w "$ip" /etc/hosts | grep -qw "$d"; then
+            sudo sed -i "/$ip/s/[[:space:]]$domain\$//; /$ip/s/\$/ ${d}/" /etc/hosts
+         fi
+      else
+         sudo sed -i "/HTB Boxes/a${ip}  ${d}" /etc/hosts
+      fi
+   done
+   echo "[+] $(grep -w "$ip" /etc/hosts)"
+}
+
+function remove-from-hosts() {
+   [[ -z $1 ]] && echo "Usage: <ip or domain> to remove the line from /etc/hosts" && return
+   sudo sed -i "/$1/d" /etc/hosts
+   if [[ $? -eq 0 ]]; then
+      echo "[+] Deleted $1 from /etc/hosts"
+   fi
+
+
 }
 
 # function qnotes() {

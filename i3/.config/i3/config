@@ -11,7 +11,7 @@ set $selected_wallpaper ~/Pictures/wallpapers/space_jelly.jpg
 floating_modifier $mod
 
 # Window Font. Bar Font unless overwritten in bar block {}
-font pango:Liberation Mono 9, FontAwesome 9
+font pango:Monaspace Radon NF, FontAwesome 9
 
 
 ## XDG / NM Applet XSS Locks ##
@@ -273,7 +273,8 @@ set $border_color  "#0d1f3c"
 set $urgent_text   "#f4a261"   
 # Start i3bar to display a workspace bar 
 bar {
-        font pango:Hack Nerd Font Mono 9, FontAwesome 9
+        # font pango:Hack Nerd Font Mono 9, FontAwesome 9
+        font pango:Monaspace Radon NF, FontAwesome 9
         status_command i3status-rs ~/.config/i3status-rust/config.toml
         colors {
                 background $bg_color
